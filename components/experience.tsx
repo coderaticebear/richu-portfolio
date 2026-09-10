@@ -1,16 +1,76 @@
 "use client";
 
-import clsx from "clsx";
-import { motion } from "motion/react";
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { experience } from "@/lib/content";
-import { usePersona, emphasisFor } from "@/lib/persona-context";
-import { springSmooth } from "@/lib/motion";
 import { SectionHeading } from "./section-heading";
-import { Reveal, RevealGroup, RevealItem } from "./motion/reveal";
+import { Reveal } from "./motion/reveal";
+
+function ExperienceCard({
+  entry,
+  index,
+}: {
+  entry: (typeof experience)[number];
+  index: number;
+}) {
+  const wrapperRef = useRef<HTMLLIElement>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: wrapperRef,
+    offset: ["start start", "end start"],
+  });
+  // Holds at full size while the card is the focus, then eases back in the
+  // final stretch as the next card arrives to cover it — a stacked-deck
+  // read, not a persistent parallax drift.
+  const scale = useTransform(scrollYProgress, [0, 0.7, 1], [1, 1, 0.94]);
+  const opacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 1, 0.55]);
+
+  return (
+    <li
+      ref={wrapperRef}
+      className="relative"
+      style={{ height: "60vh", minHeight: "28rem" }}
+    >
+      <motion.div
+        style={reduceMotion ? undefined : { scale, opacity }}
+        className="surface-card sticky top-24 overflow-hidden rounded-2xl border border-hairline-strong p-8 sm:p-12"
+      >
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-4 right-6 text-[7rem] leading-none font-semibold text-ink/[0.05] sm:text-[9rem]"
+        >
+          {String(index + 1).padStart(2, "0")}
+        </span>
+
+        <div className="relative flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          {entry.current && (
+            <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-accent-ink">
+              Current
+            </span>
+          )}
+          <span className="font-mono text-sm text-ink-muted">{entry.period}</span>
+        </div>
+
+        <h3 className="relative mt-4 text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+          {entry.role}
+        </h3>
+        <p className="relative mt-1.5 text-lg text-ink-muted">
+          {entry.company}, {entry.location}
+        </p>
+
+        <ul className="relative mt-6 flex max-w-[62ch] flex-col gap-2.5">
+          {entry.bullets.map((bullet, i) => (
+            <li key={i} className="leading-relaxed text-ink-muted">
+              {bullet.text}
+            </li>
+          ))}
+        </ul>
+      </motion.div>
+    </li>
+  );
+}
 
 export function Experience() {
-  const { view } = usePersona();
-
   return (
     <section
       id="experience"
@@ -20,75 +80,11 @@ export function Experience() {
         <SectionHeading title="Experience" />
       </Reveal>
 
-      <RevealGroup
-        as="ol"
-        stagger={0.12}
-        className="relative mt-12 flex flex-col gap-10 border-l border-hairline pl-8 sm:pl-10"
-      >
-        {experience.map((entry) => (
-          <RevealItem as="li" key={entry.company} className="relative">
-            <span
-              aria-hidden="true"
-              className={clsx(
-                "absolute top-1.5 -left-[calc(2rem+5px)] h-2.5 w-2.5 rounded-full sm:-left-[calc(2.5rem+5px)]",
-                entry.current
-                  ? "bg-accent"
-                  : "border-2 border-hairline-strong bg-bg",
-              )}
-            />
-
-            <details open={entry.current} className="group">
-              <summary className="flex cursor-pointer list-none flex-wrap items-baseline gap-x-3 gap-y-1 [&::-webkit-details-marker]:hidden">
-                <span className="text-lg font-semibold text-ink">
-                  {entry.role}
-                </span>
-                <span className="text-ink-muted">
-                  at {entry.company}, {entry.location}
-                </span>
-                <span className="font-mono text-sm text-ink-muted sm:ml-auto">
-                  {entry.period}
-                </span>
-                <svg
-                  aria-hidden="true"
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  className="mt-1 shrink-0 text-ink-muted transition-transform duration-300 group-open:rotate-180"
-                >
-                  <path
-                    d="M2 4.5 6 8.5l4-4"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </summary>
-
-              <ul className="mt-4 flex max-w-[62ch] flex-col gap-2.5">
-                {entry.bullets.map((bullet, i) => {
-                  const state = emphasisFor(view, bullet.persona);
-                  const fg = state === "fg";
-                  return (
-                    <motion.li
-                      key={i}
-                      animate={{ opacity: fg ? 1 : 0.94, scale: fg ? 1 : 0.99 }}
-                      transition={{ ...springSmooth, delay: Math.min(i, 8) * 0.02 }}
-                      className={clsx(
-                        "origin-left leading-relaxed transition-colors duration-200",
-                        fg ? "text-ink-muted" : "text-ink-recede",
-                      )}
-                    >
-                      {bullet.text}
-                    </motion.li>
-                  );
-                })}
-              </ul>
-            </details>
-          </RevealItem>
+      <ol className="relative mt-12 flex flex-col gap-6">
+        {experience.map((entry, index) => (
+          <ExperienceCard key={entry.company} entry={entry} index={index} />
         ))}
-      </RevealGroup>
+      </ol>
     </section>
   );
 }

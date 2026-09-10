@@ -6,36 +6,26 @@ import { CountUp } from "./motion/count-up";
 export function About() {
   return (
     <section id="about" className="section-pad section-gutter border-t border-hairline">
-      <div className="grid gap-12 lg:grid-cols-12 lg:gap-8">
-        <div className="lg:col-span-7">
-          <Reveal>
-            <SectionHeading title="About" />
-            <p className="content-col mt-6 text-lg leading-relaxed text-ink-muted">
-              {summaryFull}
-            </p>
-          </Reveal>
-        </div>
+      <Reveal>
+        <SectionHeading title="About" />
+        <p className="content-col mt-6 text-lg leading-relaxed text-ink-muted">
+          {summaryFull}
+        </p>
+      </Reveal>
 
-        <div className="lg:col-span-4 lg:col-start-9">
-          <RevealGroup
-            as="dl"
-            stagger={0.08}
-            className="surface-card flex flex-col divide-y divide-hairline rounded-2xl border border-hairline"
-          >
-            {metrics.map((metric) => (
-              <RevealItem
-                key={metric.label}
-                className="flex items-baseline justify-between gap-4 px-6 py-5"
-              >
-                <dt className="text-sm text-ink-muted">{metric.label}</dt>
-                <dd className="font-mono text-2xl font-semibold whitespace-nowrap text-ink">
-                  <CountUp value={metric.value} suffix={metric.suffix} />
-                </dd>
-              </RevealItem>
-            ))}
-          </RevealGroup>
-        </div>
-      </div>
+      <RevealGroup
+        stagger={0.1}
+        className="mt-16 grid gap-x-8 gap-y-10 sm:grid-cols-3"
+      >
+        {metrics.map((metric) => (
+          <RevealItem key={metric.label} className="border-t border-hairline pt-5">
+            <div className="text-[clamp(2.75rem,7vw,5.5rem)] leading-none font-semibold tracking-[-0.02em] text-ink">
+              <CountUp value={metric.value} suffix={metric.suffix} />
+            </div>
+            <p className="mt-3 text-ink-muted">{metric.label}</p>
+          </RevealItem>
+        ))}
+      </RevealGroup>
     </section>
   );
 }

@@ -13,9 +13,8 @@
   --color-surface-raised: #191d23;
   --color-ink: #edeeec;
   --color-ink-muted: #9ba1a8;
-  /* Legible-but-secondary: what "recede" in the persona toggle uses.
-     Fixed hex, not opacity — opacity on already-muted text falls below
-     AA contrast, and receded content still has to be readable. */
+  /* A step quieter than ink-muted, for tertiary text (timestamps, fine
+     print). Fixed hex, not opacity, so it never risks falling below AA. */
   --color-ink-recede: #7d8288;
   --color-accent: #e0a458;
   --color-accent-text: #e0a458;
@@ -30,7 +29,7 @@
     0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
     0 16px 32px -20px rgba(0, 0, 0, 0.65);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-switzer);
   --font-mono: var(--font-geist-mono);
 
   color-scheme: dark;

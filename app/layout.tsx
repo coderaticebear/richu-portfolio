@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Geist_Mono } from "next/font/google";
 import { MotionConfig } from "motion/react";
 import { ThemeProvider } from "@/components/theme-provider";
-import { PersonaProvider } from "@/lib/persona-context";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+// Switzer — the typeface cosmos.studio itself is set in (confirmed via
+// computed styles), self-hosted per Fontshare's free license (self-hosting
+// "permitted and recommended"). One family, weight does the work of
+// hierarchy — headline down to body.
+const switzer = localFont({
+  src: "./fonts/Switzer-Variable.woff2",
+  variable: "--font-switzer",
+  weight: "100 900",
   display: "swap",
 });
 
@@ -34,17 +39,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${switzer.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
         <ThemeProvider>
           {/* "user" defers to the OS prefers-reduced-motion setting for
               every Motion-driven animation on the page. */}
           <MotionConfig reducedMotion="user">
-            <PersonaProvider>
-              <SmoothScroll />
-              {children}
-            </PersonaProvider>
+            <SmoothScroll />
+            {children}
           </MotionConfig>
         </ThemeProvider>
       </body>

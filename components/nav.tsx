@@ -6,7 +6,6 @@ import clsx from "clsx";
 import { AnimatePresence, motion } from "motion/react";
 import { navLinks, contact } from "@/lib/content";
 import { useActiveSection } from "@/lib/use-active-section";
-import { PersonaToggle } from "@/components/persona-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { springSnappy } from "@/lib/motion";
 
@@ -73,7 +72,6 @@ export function Nav() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <PersonaToggle scope="desktop" />
           <ThemeToggle />
           <a
             href={contact.resumeHref}
@@ -143,8 +141,7 @@ export function Nav() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center justify-between gap-3">
-          <PersonaToggle scope="mobile" />
+        <div className="flex items-center">
           <ThemeToggle />
         </div>
         <a

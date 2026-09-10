@@ -6,6 +6,7 @@ import { roles, contact } from "@/lib/content";
 import { btnPrimary, btnSecondary, btnGhost } from "@/lib/styles";
 import { enterVariant, staggerContainer, springSmooth } from "@/lib/motion";
 import { usePointerCapable } from "@/lib/use-pointer-capable";
+import { SplitReveal } from "./motion/split-reveal";
 
 const ROLE_INTERVAL_MS = 2600;
 
@@ -50,18 +51,10 @@ export function Hero() {
       </motion.div>
 
       <div className="section-gutter">
-        <motion.div
-          initial="hidden"
-          animate="show"
-          variants={staggerContainer(0.12, 0.05)}
-          className="max-w-[54rem]"
-        >
-          <motion.h1
-            variants={enterVariant}
-            className="text-[clamp(2.75rem,8vw,6rem)] font-semibold leading-[0.98] tracking-normal text-ink"
-          >
-            Richu Thankachan
-          </motion.h1>
+        <motion.div initial="hidden" animate="show" variants={staggerContainer(0.12, 0.05)}>
+          <h1 className="text-[clamp(2.75rem,8.5vw,7rem)] leading-[0.96] font-semibold tracking-[-0.02em] text-ink">
+            <SplitReveal text="Richu Thankachan" by="char" trigger="mount" stagger={0.02} />
+          </h1>
 
           <motion.p
             variants={enterVariant}

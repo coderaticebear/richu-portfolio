@@ -1,8 +1,6 @@
-export type Persona = "support" | "developer" | "both";
-
 export interface SkillGroup {
   label: string;
-  items: { name: string; persona: Persona }[];
+  items: { name: string }[];
 }
 
 export interface ExperienceEntry {
@@ -11,7 +9,7 @@ export interface ExperienceEntry {
   role: string;
   period: string;
   current: boolean;
-  bullets: { text: string; persona: Persona }[];
+  bullets: { text: string }[];
 }
 
 export interface Project {
@@ -21,7 +19,6 @@ export interface Project {
   stack: string[];
   outcome: string | null;
   link: string | null;
-  persona: Persona;
   lead?: boolean;
 }
 
