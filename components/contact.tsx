@@ -42,7 +42,7 @@ export function Contact() {
               <p className="text-sm text-ink-muted">Email</p>
               <a
                 href={`mailto:${contact.email}`}
-                className={`text-lg text-ink ${underlineLink}`}
+                className={`inline-block py-1 text-lg text-ink ${underlineLink}`}
               >
                 {contact.email}
               </a>
@@ -51,7 +51,7 @@ export function Contact() {
               <p className="text-sm text-ink-muted">Phone</p>
               <a
                 href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}
-                className={`text-lg text-ink ${underlineLink}`}
+                className={`inline-block py-1 text-lg text-ink ${underlineLink}`}
               >
                 {contact.phone}
               </a>
@@ -62,7 +62,7 @@ export function Contact() {
                 href={contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`text-lg text-ink ${underlineLink}`}
+                className={`inline-block py-1 text-lg text-ink ${underlineLink}`}
               >
                 linkedin.com/in/richu-thankachan
               </a>

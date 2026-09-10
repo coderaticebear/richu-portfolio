@@ -25,6 +25,13 @@ import { springSmooth, viewportOnce } from "@/lib/motion";
  * to instant) rather than branching to a differently-shaped plain-text
  * DOM — the same structure server- and client-side avoids a hydration
  * mismatch that would otherwise strand this at its initial clipped state.
+ *
+ * No aria-hidden here, and no aria-label on SplitReveal's wrapper either
+ * (see below) — an earlier version hid these fragments and named the
+ * wrapper instead, which axe correctly flags: aria-label isn't permitted
+ * on an element with the implicit "generic" role a plain span has. The
+ * real text is already in the DOM in reading order, so the browser
+ * computes the right accessible name from content on its own.
  */
 function SplitUnit({
   content,
@@ -44,7 +51,6 @@ function SplitUnit({
     <motion.span
       className="inline-block overflow-hidden"
       style={{ verticalAlign: "bottom" }}
-      aria-hidden="true"
       initial="hidden"
       variants={{ hidden: {}, show: {} }}
       {...triggerProps}
@@ -95,7 +101,7 @@ export function SplitReveal({
   let charIndex = 0;
 
   return (
-    <span className={className} aria-label={text}>
+    <span className={className}>
       {words.map((word, wi) => {
         const isLast = wi === words.length - 1;
 
