@@ -1,10 +1,13 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { experience } from "@/lib/content";
 import { SectionHeading } from "./section-heading";
 import { Reveal } from "./motion/reveal";
+
+const STICKY_OFFSET = 96; // matches `top-24`
+const HANG = 320; // extra scroll distance the card holds fully in place
 
 function ExperienceCard({
   entry,
@@ -14,24 +17,56 @@ function ExperienceCard({
   index: number;
 }) {
   const wrapperRef = useRef<HTMLLIElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+
+  // The wrapper's height has to be driven by the card's own rendered
+  // height — bullet count differs per role and text reflows per
+  // viewport, so a fixed vh guess either leaves no "hang" room or, worse,
+  // makes the wrapper *shorter* than the card, which is exactly what was
+  // overlapping cards on mobile: the card doesn't get clipped to its
+  // wrapper (sticky positioning doesn't do that), it just spills into
+  // the next card's space.
+  const [cardHeight, setCardHeight] = useState<number | null>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+    const measure = () => setCardHeight(card.offsetHeight);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(card);
+    return () => ro.disconnect();
+  }, []);
+
+  const wrapperHeight = cardHeight ? cardHeight + STICKY_OFFSET + HANG : undefined;
+  // The exact scroll progress at which the sticky card releases (its
+  // wrapper's bottom edge reaches the sticky offset). Shrink/fade ease in
+  // during the last stretch of the hold and land exactly as it releases,
+  // instead of guessing a universal fraction that drifts out of sync
+  // whenever content height changes.
+  const releaseAt = wrapperHeight ? HANG / wrapperHeight : 0.85;
+  const shrinkStart = releaseAt * 0.6;
+
   const { scrollYProgress } = useScroll({
     target: wrapperRef,
     offset: ["start start", "end start"],
   });
-  // Holds at full size while the card is the focus, then eases back in the
-  // final stretch as the next card arrives to cover it — a stacked-deck
-  // read, not a persistent parallax drift.
-  const scale = useTransform(scrollYProgress, [0, 0.7, 1], [1, 1, 0.94]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7, 1], [1, 1, 0.55]);
+  const scale = useTransform(
+    scrollYProgress,
+    [0, shrinkStart, releaseAt, 1],
+    [1, 1, 0.94, 0.94],
+  );
+  const opacity = useTransform(
+    scrollYProgress,
+    [0, shrinkStart, releaseAt, 1],
+    [1, 1, 0.55, 0.55],
+  );
 
   return (
-    <li
-      ref={wrapperRef}
-      className="relative"
-      style={{ height: "60vh", minHeight: "28rem" }}
-    >
+    <li ref={wrapperRef} className="relative" style={{ height: wrapperHeight, minHeight: "32rem" }}>
       <motion.div
+        ref={cardRef}
         style={reduceMotion ? undefined : { scale, opacity }}
         className="surface-card sticky top-24 overflow-hidden rounded-2xl border border-hairline-strong p-8 sm:p-12"
       >
@@ -80,7 +115,7 @@ export function Experience() {
         <SectionHeading title="Experience" />
       </Reveal>
 
-      <ol className="relative mt-12 flex flex-col gap-6">
+      <ol className="relative mt-12 flex flex-col">
         {experience.map((entry, index) => (
           <ExperienceCard key={entry.company} entry={entry} index={index} />
         ))}
