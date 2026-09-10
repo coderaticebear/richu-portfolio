@@ -19,7 +19,6 @@ export interface Project {
   stack: string[];
   outcome: string | null;
   link: string | null;
-  lead?: boolean;
 }
 
 export interface Credential {

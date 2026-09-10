@@ -179,18 +179,30 @@ export const experience: ExperienceEntry[] = [
   },
 ];
 
-// NOTE: only one project was supplied, and it's missing role/outcome/link.
-// Those fields are left `null` on purpose — do not invent metrics or a role.
-// Replace before shipping: see TODO rendered on the card itself.
+// Role/outcome/stack for both pulled from the actual repos and their
+// READMEs (github.com/coderaticebear/school_erp and .../leaf-php), not
+// invented. Neither project is deployed publicly, so "outcome" describes
+// what's actually built and working rather than a fabricated metric.
 export const projects: Project[] = [
   {
     name: "School ERP",
-    problem: "An ERP solution for a school.",
-    role: null,
-    stack: ["Laravel", "PostgreSQL"],
-    outcome: null,
-    link: null,
-    lead: true,
+    problem:
+      "A containerized ERP system for schools — academic years, classes, students, and the relationships between them.",
+    role: "Sole developer — planned the schema and architecture, then built the full Laravel backend end to end.",
+    stack: ["Laravel", "PostgreSQL", "Docker"],
+    outcome:
+      "Fully working locally — migrations, seeders, and a Dockerized environment via Laravel Sail. Not yet deployed publicly.",
+    link: "https://github.com/coderaticebear/school_erp",
+  },
+  {
+    name: "Leaf PHP",
+    problem:
+      "A framework-free PHP microservices toolkit, built to understand how routing, requests, and service separation actually work without a framework doing it for you.",
+    role: "Sole developer — designed and built the framework from scratch, including the router, request/response layer, and CLI tooling.",
+    stack: ["PHP"],
+    outcome:
+      "A working custom router, request/response handling, and a CLI to scaffold and serve independent services.",
+    link: "https://github.com/coderaticebear/leaf-php",
   },
 ];
 

@@ -3,9 +3,21 @@
 import { motion, useReducedMotion } from "motion/react";
 import { projects } from "@/lib/content";
 import { enterVariant, springSnappy, viewportOnce } from "@/lib/motion";
+import { underlineLink } from "@/lib/styles";
 import { SectionHeading } from "./section-heading";
 import { Reveal } from "./motion/reveal";
 import { SplitReveal } from "./motion/split-reveal";
+
+function TodoField({ label, todoHint }: { label: string; todoHint: string }) {
+  return (
+    <div>
+      <dt className="font-mono text-xs text-ink-muted">{label}</dt>
+      <dd className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-md border border-dashed border-accent/50 px-2 py-1 text-sm text-accent-text">
+        TODO — {todoHint}
+      </dd>
+    </div>
+  );
+}
 
 function Field({
   label,
@@ -16,16 +28,37 @@ function Field({
   value: string | null;
   todoHint: string;
 }) {
+  if (!value) return <TodoField label={label} todoHint={todoHint} />;
   return (
     <div>
       <dt className="font-mono text-xs text-ink-muted">{label}</dt>
-      {value ? (
-        <dd className="mt-1 text-ink">{value}</dd>
-      ) : (
-        <dd className="mt-1 inline-flex w-fit items-center gap-1.5 rounded-md border border-dashed border-accent/50 px-2 py-1 text-sm text-accent-text">
-          TODO — {todoHint}
-        </dd>
-      )}
+      <dd className="mt-1 text-ink">{value}</dd>
+    </div>
+  );
+}
+
+function LinkField({ value, todoHint }: { value: string | null; todoHint: string }) {
+  if (!value) return <TodoField label="Link" todoHint={todoHint} />;
+  const isGithub = (() => {
+    try {
+      return new URL(value).hostname === "github.com";
+    } catch {
+      return false;
+    }
+  })();
+  return (
+    <div>
+      <dt className="font-mono text-xs text-ink-muted">Link</dt>
+      <dd className="mt-1">
+        <a
+          href={value}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`text-ink ${underlineLink}`}
+        >
+          {isGithub ? "View on GitHub" : "View project"}
+        </a>
+      </dd>
     </div>
   );
 }
@@ -46,7 +79,7 @@ export function Projects() {
       <Reveal>
         <SectionHeading
           title="Projects"
-          description="One case study is ready to publish; more are on the way."
+          description="Two self-directed builds — a Laravel ERP and a from-scratch PHP framework — both open source."
         />
       </Reveal>
 
@@ -99,11 +132,7 @@ export function Projects() {
                 value={project.outcome}
                 todoHint="add a metric"
               />
-              <Field
-                label="Link"
-                value={project.link}
-                todoHint="add a live/repo link"
-              />
+              <LinkField value={project.link} todoHint="add a live/repo link" />
             </dl>
           </motion.article>
         ))}
