@@ -5,6 +5,7 @@ import { projects } from "@/lib/content";
 import { enterVariant, springSnappy, viewportOnce } from "@/lib/motion";
 import { SectionHeading } from "./section-heading";
 import { Reveal } from "./motion/reveal";
+import { SplitReveal } from "./motion/split-reveal";
 
 function Field({
   label,
@@ -50,20 +51,31 @@ export function Projects() {
       </Reveal>
 
       <div className="mt-12 grid gap-6">
-        {projects.map((project) => (
+        {projects.map((project, index) => (
           <motion.article
             key={project.name}
             initial="hidden"
             variants={enterVariant}
             {...entranceTrigger}
-            whileHover={{ y: -5 }}
+            whileHover={{ y: -6 }}
             transition={springSnappy}
-            className="surface-card rounded-2xl border border-hairline-strong p-8 sm:p-10"
+            className="surface-card relative rounded-2xl border border-hairline-strong p-8 sm:p-14"
           >
-            <h3 className="text-2xl font-semibold text-ink">{project.name}</h3>
-            <p className="mt-2 max-w-lg text-ink-muted">{project.problem}</p>
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute top-4 right-6 text-[7rem] leading-none font-semibold text-ink/[0.05] sm:top-6 sm:text-[9rem]"
+            >
+              {String(index + 1).padStart(2, "0")}
+            </span>
 
-            <dl className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <h3 className="relative text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.02] font-medium tracking-[-0.015em] text-ink">
+              <SplitReveal text={project.name} by="word" trigger="scroll" stagger={0.05} />
+            </h3>
+            <p className="relative mt-3 max-w-lg text-lg text-ink-muted">
+              {project.problem}
+            </p>
+
+            <dl className="relative mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
               <div>
                 <dt className="font-mono text-xs text-ink-muted">Stack</dt>
                 <dd className="mt-1 flex flex-wrap gap-1.5">

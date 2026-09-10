@@ -1,7 +1,64 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion, type Transition } from "motion/react";
 import { springSmooth, viewportOnce } from "@/lib/motion";
+
+/**
+ * One clipped, animatable word or character. Defined at module scope, not
+ * nested inside SplitReveal — a component defined inside another
+ * component's render body is a new function reference on every render,
+ * which React would treat as a brand new component type and remount it.
+ *
+ * The whileInView trigger lives on the OUTER (clipping) span, not the
+ * inner transformed one. IntersectionObserver computes a target's visible
+ * area by clipping through every ancestor's overflow — and the inner span
+ * starts translated below its own parent's overflow-hidden bounds by
+ * design (that's the mask effect). So the inner span's own geometry is
+ * *always* fully clipped to nothing before it animates, and it would
+ * never report as "intersecting" if it watched its own visibility — a
+ * deadlock. The outer span isn't itself transformed, so its geometry is
+ * normal; it holds the trigger, and the inner span just inherits the
+ * resolved "show" state through Motion's ordinary variant propagation.
+ *
+ * Reduced motion is handled by swapping the trigger to "mount" (an
+ * `animate` call MotionConfig's reducedMotion="user" reliably collapses
+ * to instant) rather than branching to a differently-shaped plain-text
+ * DOM — the same structure server- and client-side avoids a hydration
+ * mismatch that would otherwise strand this at its initial clipped state.
+ */
+function SplitUnit({
+  content,
+  transition,
+  trigger,
+}: {
+  content: string;
+  transition: Transition;
+  trigger: "mount" | "scroll";
+}) {
+  const triggerProps =
+    trigger === "scroll"
+      ? { whileInView: "show" as const, viewport: viewportOnce }
+      : { animate: "show" as const };
+
+  return (
+    <motion.span
+      className="inline-block overflow-hidden"
+      style={{ verticalAlign: "bottom" }}
+      aria-hidden="true"
+      initial="hidden"
+      variants={{ hidden: {}, show: {} }}
+      {...triggerProps}
+    >
+      <motion.span
+        className="inline-block"
+        variants={{ hidden: { y: "115%" }, show: { y: "0%" } }}
+        transition={transition}
+      >
+        {content}
+      </motion.span>
+    </motion.span>
+  );
+}
 
 /**
  * Word- or character-level "mask reveal": each unit sits inside an
@@ -11,8 +68,9 @@ import { springSmooth, viewportOnce } from "@/lib/motion";
  *
  * `trigger="mount"` fires immediately (the hero name, visible on load).
  * `trigger="scroll"` fires once on scroll into view (section headings).
- * Reduced motion renders the text as plain, unsplit text — no clipping,
- * no stagger, nothing for a screen reader or copy/paste to trip over.
+ * Under reduced motion every unit switches to the mount trigger, which
+ * MotionConfig collapses to instant — see SplitUnit's docstring for why
+ * this is a trigger swap rather than a structural branch.
  */
 export function SplitReveal({
   text,
@@ -30,38 +88,10 @@ export function SplitReveal({
   className?: string;
 }) {
   const reduceMotion = useReducedMotion();
-
-  if (reduceMotion) {
-    return <span className={className}>{text}</span>;
-  }
+  const effectiveTrigger = reduceMotion ? "mount" : trigger;
 
   const words = text.split(" ");
-  const viewportProps =
-    trigger === "scroll" ? { whileInView: "show" as const, viewport: viewportOnce } : {};
-  const mountProps = trigger === "mount" ? { animate: "show" as const } : {};
   const space = String.fromCharCode(32);
-
-  function Unit({ content, index }: { content: string; index: number }) {
-    return (
-      <span
-        className="inline-block overflow-hidden"
-        style={{ verticalAlign: "bottom" }}
-        aria-hidden="true"
-      >
-        <motion.span
-          className="inline-block"
-          initial={{ y: "115%" }}
-          variants={{ show: { y: "0%" } }}
-          transition={{ ...springSmooth, delay: delay + index * stagger }}
-          {...viewportProps}
-          {...mountProps}
-        >
-          {content}
-        </motion.span>
-      </span>
-    );
-  }
-
   let charIndex = 0;
 
   return (
@@ -72,7 +102,11 @@ export function SplitReveal({
         if (by === "word") {
           return (
             <span key={wi}>
-              <Unit content={word} index={wi} />
+              <SplitUnit
+                content={word}
+                trigger={effectiveTrigger}
+                transition={{ ...springSmooth, delay: delay + wi * stagger }}
+              />
               {isLast ? null : space}
             </span>
           );
@@ -83,9 +117,16 @@ export function SplitReveal({
         // space is a sibling of the group, not inside it, so it stays a
         // valid break point.
         const chars = Array.from(word).map((char) => {
-          const unit = <Unit key={charIndex} content={char} index={charIndex} />;
+          const node = (
+            <SplitUnit
+              key={charIndex}
+              content={char}
+              trigger={effectiveTrigger}
+              transition={{ ...springSmooth, delay: delay + charIndex * stagger }}
+            />
+          );
           charIndex += 1;
-          return unit;
+          return node;
         });
 
         return (
