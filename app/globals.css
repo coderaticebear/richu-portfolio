@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+/*
+  Design tokens — "Signal, not noise"
+  Dark is the default surface; [data-theme="light"] overrides.
+  Accent (amber) reads as a live/active signal throughout the page —
+  never purely decorative.
+*/
+
+:root {
+  --color-bg: #0a0c0f;
+  --color-surface: #14171c;
+  --color-surface-raised: #191d23;
+  --color-ink: #edeeec;
+  --color-ink-muted: #9ba1a8;
+  --color-accent: #e0a458;
+  --color-accent-text: #e0a458;
+  --color-accent-ink: #14100a;
+  --color-hairline: rgba(255, 255, 255, 0.08);
+  --color-hairline-strong: rgba(255, 255, 255, 0.16);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --color-bg: #f2f3f1;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+  --color-ink: #14171a;
+  --color-ink-muted: #5b6066;
+  --color-accent: #e0a458;
+  --color-accent-text: #8f5b1e;
+  --color-accent-ink: #14100a;
+  --color-hairline: rgba(20, 23, 26, 0.09);
+  --color-hairline-strong: rgba(20, 23, 26, 0.16);
+
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-bg: var(--color-bg);
+  --color-surface: var(--color-surface);
+  --color-surface-raised: var(--color-surface-raised);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-text: var(--color-accent-text);
+  --color-accent-ink: var(--color-accent-ink);
+  --color-hairline: var(--color-hairline);
+  --color-hairline-strong: var(--color-hairline-strong);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  border-color: var(--color-hairline);
+}
+
+html {
+  scroll-behavior: auto; /* smooth-scroll library takes over when mounted */
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text",
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* Visible, deliberate keyboard focus — never removed without replacement */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+}
+
+/* Reusable rhythm primitives */
+.section-gutter {
+  padding-inline: clamp(1.25rem, 6vw, 6rem);
+}
+
+.section-pad {
+  padding-block: clamp(4.5rem, 10vw, 8rem);
+}
+
+.content-col {
+  max-width: 72ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
