@@ -65,9 +65,7 @@ export function Experience() {
                       key={i}
                       className={clsx(
                         "leading-relaxed",
-                        state === "fg"
-                          ? "text-ink-muted"
-                          : "text-ink-muted opacity-45",
+                        state === "fg" ? "text-ink-muted" : "text-ink-recede",
                       )}
                     >
                       {bullet.text}

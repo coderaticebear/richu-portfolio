@@ -36,7 +36,7 @@ export function Hero() {
 
       <div className="section-gutter">
         <div className="max-w-[54rem]">
-          <h1 className="text-[clamp(2.75rem,8vw,6rem)] font-semibold leading-[0.98] tracking-tight text-ink">
+          <h1 className="text-[clamp(2.75rem,8vw,6rem)] font-semibold leading-[0.98] tracking-normal text-ink">
             Richu Thankachan
           </h1>
 

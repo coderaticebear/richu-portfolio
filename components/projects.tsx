@@ -48,7 +48,7 @@ export function Projects() {
             <article
               key={project.name}
               className={clsx(
-                "rounded-2xl border bg-surface p-8 transition-none sm:p-10",
+                "surface-card rounded-2xl border p-8 sm:p-10",
                 state === "fg" ? "border-hairline-strong" : "border-hairline",
               )}
             >
@@ -66,7 +66,7 @@ export function Projects() {
                     "shrink-0 rounded-full border px-3 py-1 font-mono text-xs",
                     state === "fg"
                       ? "border-hairline-strong text-ink"
-                      : "border-hairline text-ink-muted opacity-45",
+                      : "border-hairline text-ink-recede",
                   )}
                 >
                   {project.persona === "both"
@@ -80,16 +80,16 @@ export function Projects() {
               <dl className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <dt className="font-mono text-xs text-ink-muted">Stack</dt>
-                  <dd
-                    className={clsx(
-                      "mt-1 flex flex-wrap gap-1.5",
-                      state === "recede" && "opacity-45",
-                    )}
-                  >
+                  <dd className="mt-1 flex flex-wrap gap-1.5">
                     {project.stack.map((tech) => (
                       <span
                         key={tech}
-                        className="rounded-full border border-hairline px-2.5 py-1 text-sm text-ink"
+                        className={clsx(
+                          "rounded-full border px-2.5 py-1 text-sm",
+                          state === "fg"
+                            ? "border-hairline-strong text-ink"
+                            : "border-hairline text-ink-recede",
+                        )}
                       >
                         {tech}
                       </span>

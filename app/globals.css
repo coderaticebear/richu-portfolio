@@ -13,11 +13,22 @@
   --color-surface-raised: #191d23;
   --color-ink: #edeeec;
   --color-ink-muted: #9ba1a8;
+  /* Legible-but-secondary: what "recede" in the persona toggle uses.
+     Fixed hex, not opacity — opacity on already-muted text falls below
+     AA contrast, and receded content still has to be readable. */
+  --color-ink-recede: #7d8288;
   --color-accent: #e0a458;
   --color-accent-text: #e0a458;
   --color-accent-ink: #14100a;
   --color-hairline: rgba(255, 255, 255, 0.08);
   --color-hairline-strong: rgba(255, 255, 255, 0.16);
+  /* Border-only controls (e.g. the secondary button) need their boundary
+     identifiable on its own — calibrated to clear 3:1 against the page
+     background, unlike the quieter grouping hairlines above. */
+  --color-control-border: rgba(255, 255, 255, 0.4);
+  --shadow-card:
+    0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
+    0 16px 32px -20px rgba(0, 0, 0, 0.65);
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -30,12 +41,17 @@
   --color-surface: #ffffff;
   --color-surface-raised: #ffffff;
   --color-ink: #14171a;
-  --color-ink-muted: #5b6066;
+  --color-ink-muted: #4a4f54;
+  --color-ink-recede: #6b6f74;
   --color-accent: #e0a458;
   --color-accent-text: #8f5b1e;
   --color-accent-ink: #14100a;
   --color-hairline: rgba(20, 23, 26, 0.09);
   --color-hairline-strong: rgba(20, 23, 26, 0.16);
+  --color-control-border: rgba(20, 23, 26, 0.5);
+  --shadow-card:
+    0 1px 0 0 rgba(255, 255, 255, 0.6) inset,
+    0 16px 32px -22px rgba(20, 23, 26, 0.18);
 
   color-scheme: light;
 }
@@ -46,11 +62,13 @@
   --color-surface-raised: var(--color-surface-raised);
   --color-ink: var(--color-ink);
   --color-ink-muted: var(--color-ink-muted);
+  --color-ink-recede: var(--color-ink-recede);
   --color-accent: var(--color-accent);
   --color-accent-text: var(--color-accent-text);
   --color-accent-ink: var(--color-accent-ink);
   --color-hairline: var(--color-hairline);
   --color-hairline-strong: var(--color-hairline-strong);
+  --color-control-border: var(--color-control-border);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -94,6 +112,14 @@ body {
 
 .content-col {
   max-width: 72ch;
+}
+
+/* Content-layer depth: a soft ambient shadow + a hairline inner highlight,
+   standing in for elevation. No blur here — materials.md reserves the glass
+   effect for the floating nav, not the content layer. */
+.surface-card {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -29,7 +29,7 @@ export function Skills() {
                       "rounded-full border px-3 py-1.5 text-sm",
                       state === "fg"
                         ? "border-hairline-strong text-ink"
-                        : "border-hairline text-ink-muted opacity-45",
+                        : "border-hairline text-ink-recede",
                     )}
                   >
                     {item.name}

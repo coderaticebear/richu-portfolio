@@ -9,7 +9,7 @@ export function SectionHeading({
 }) {
   return (
     <div className="max-w-[40rem]">
-      <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-semibold tracking-tight text-ink">
+      <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-semibold tracking-normal text-ink">
         {title}
       </h2>
       {description && (

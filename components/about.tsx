@@ -13,7 +13,7 @@ export function About() {
         </div>
 
         <div className="lg:col-span-4 lg:col-start-9">
-          <dl className="flex flex-col divide-y divide-hairline rounded-2xl border border-hairline bg-surface">
+          <dl className="surface-card flex flex-col divide-y divide-hairline rounded-2xl border border-hairline">
             {metrics.map((metric) => (
               <div
                 key={metric.label}
