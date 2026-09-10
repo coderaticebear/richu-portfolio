@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
+import { MotionConfig } from "motion/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { PersonaProvider } from "@/lib/persona-context";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,7 +38,14 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-bg text-ink">
         <ThemeProvider>
-          <PersonaProvider>{children}</PersonaProvider>
+          {/* "user" defers to the OS prefers-reduced-motion setting for
+              every Motion-driven animation on the page. */}
+          <MotionConfig reducedMotion="user">
+            <PersonaProvider>
+              <SmoothScroll />
+              {children}
+            </PersonaProvider>
+          </MotionConfig>
         </ThemeProvider>
       </body>
     </html>

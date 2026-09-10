@@ -1,13 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { roles, contact } from "@/lib/content";
 import { btnPrimary, btnSecondary, btnGhost } from "@/lib/styles";
+import { enterVariant, staggerContainer, springSmooth } from "@/lib/motion";
+import { usePointerCapable } from "@/lib/use-pointer-capable";
 
 const ROLE_INTERVAL_MS = 2600;
 
 export function Hero() {
   const [roleIndex, setRoleIndex] = useState(0);
+  const pointerCapable = usePointerCapable();
+  const reduceMotion = useReducedMotion();
+  const { scrollY } = useScroll();
+  // Subtle drift on the background glow only — never on the text, only for
+  // devices with a real pointer/scroll wheel (not touch), and off entirely
+  // under reduced motion — parallax is a vestibular trigger.
+  const parallaxDistance = pointerCapable && !reduceMotion ? 120 : 0;
+  const parallaxY = useTransform(scrollY, [0, 800], [0, parallaxDistance]);
 
   useEffect(() => {
     const prefersReduced = window.matchMedia(
@@ -29,27 +40,60 @@ export function Hero() {
       <div id="top-sentinel" className="absolute top-0 left-0 h-px w-px" />
 
       {/* ambient background — a fixed pair of soft gradient fields, not particles */}
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10">
+      <motion.div
+        aria-hidden="true"
+        style={{ y: parallaxY }}
+        className="pointer-events-none absolute inset-0 -z-10"
+      >
         <div className="absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-accent/20 blur-[120px]" />
         <div className="absolute right-10 top-60 h-[24rem] w-[24rem] rounded-full bg-accent/10 blur-[100px]" />
-      </div>
+      </motion.div>
 
       <div className="section-gutter">
-        <div className="max-w-[54rem]">
-          <h1 className="text-[clamp(2.75rem,8vw,6rem)] font-semibold leading-[0.98] tracking-normal text-ink">
+        <motion.div
+          initial="hidden"
+          animate="show"
+          variants={staggerContainer(0.12, 0.05)}
+          className="max-w-[54rem]"
+        >
+          <motion.h1
+            variants={enterVariant}
+            className="text-[clamp(2.75rem,8vw,6rem)] font-semibold leading-[0.98] tracking-normal text-ink"
+          >
             Richu Thankachan
-          </h1>
+          </motion.h1>
 
-          <p className="mt-5 font-mono text-xl text-accent-text sm:text-2xl" aria-live="polite">
-            {roles[roleIndex]}
-          </p>
+          <motion.p
+            variants={enterVariant}
+            className="mt-5 h-8 font-mono text-xl text-accent-text sm:h-9 sm:text-2xl"
+            aria-live="polite"
+          >
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={roleIndex}
+                initial={{ opacity: 0, y: 8, filter: "blur(3px)" }}
+                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
+                transition={springSmooth}
+                className="inline-block"
+              >
+                {roles[roleIndex]}
+              </motion.span>
+            </AnimatePresence>
+          </motion.p>
 
-          <p className="content-col mt-6 text-lg text-ink-muted sm:text-xl">
+          <motion.p
+            variants={enterVariant}
+            className="content-col mt-6 text-lg text-ink-muted sm:text-xl"
+          >
             I resolve SaaS, network, and application issues fast — and
             understand the code and systems behind them.
-          </p>
+          </motion.p>
 
-          <div className="mt-10 flex flex-wrap items-center gap-3">
+          <motion.div
+            variants={enterVariant}
+            className="mt-10 flex flex-wrap items-center gap-3"
+          >
             <a href="#projects" className={btnPrimary}>
               View Projects
             </a>
@@ -59,8 +103,8 @@ export function Hero() {
             <a href="#contact" className={btnGhost}>
               Contact
             </a>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
 
       <div

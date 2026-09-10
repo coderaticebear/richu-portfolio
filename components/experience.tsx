@@ -1,9 +1,12 @@
 "use client";
 
 import clsx from "clsx";
+import { motion } from "motion/react";
 import { experience } from "@/lib/content";
 import { usePersona, emphasisFor } from "@/lib/persona-context";
+import { springSmooth } from "@/lib/motion";
 import { SectionHeading } from "./section-heading";
+import { Reveal, RevealGroup, RevealItem } from "./motion/reveal";
 
 export function Experience() {
   const { view } = usePersona();
@@ -13,11 +16,17 @@ export function Experience() {
       id="experience"
       className="section-pad section-gutter border-t border-hairline"
     >
-      <SectionHeading title="Experience" />
+      <Reveal>
+        <SectionHeading title="Experience" />
+      </Reveal>
 
-      <ol className="relative mt-12 flex flex-col gap-10 border-l border-hairline pl-8 sm:pl-10">
+      <RevealGroup
+        as="ol"
+        stagger={0.12}
+        className="relative mt-12 flex flex-col gap-10 border-l border-hairline pl-8 sm:pl-10"
+      >
         {experience.map((entry) => (
-          <li key={entry.company} className="relative">
+          <RevealItem as="li" key={entry.company} className="relative">
             <span
               aria-hidden="true"
               className={clsx(
@@ -45,7 +54,7 @@ export function Experience() {
                   height="12"
                   viewBox="0 0 12 12"
                   fill="none"
-                  className="mt-1 shrink-0 text-ink-muted group-open:rotate-180"
+                  className="mt-1 shrink-0 text-ink-muted transition-transform duration-300 group-open:rotate-180"
                 >
                   <path
                     d="M2 4.5 6 8.5l4-4"
@@ -60,23 +69,26 @@ export function Experience() {
               <ul className="mt-4 flex max-w-[62ch] flex-col gap-2.5">
                 {entry.bullets.map((bullet, i) => {
                   const state = emphasisFor(view, bullet.persona);
+                  const fg = state === "fg";
                   return (
-                    <li
+                    <motion.li
                       key={i}
+                      animate={{ opacity: fg ? 1 : 0.94, scale: fg ? 1 : 0.99 }}
+                      transition={{ ...springSmooth, delay: Math.min(i, 8) * 0.02 }}
                       className={clsx(
-                        "leading-relaxed",
-                        state === "fg" ? "text-ink-muted" : "text-ink-recede",
+                        "origin-left leading-relaxed transition-colors duration-200",
+                        fg ? "text-ink-muted" : "text-ink-recede",
                       )}
                     >
                       {bullet.text}
-                    </li>
+                    </motion.li>
                   );
                 })}
               </ul>
             </details>
-          </li>
+          </RevealItem>
         ))}
-      </ol>
+      </RevealGroup>
     </section>
   );
 }

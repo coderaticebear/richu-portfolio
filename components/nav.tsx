@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
+import { AnimatePresence, motion } from "motion/react";
 import { navLinks, contact } from "@/lib/content";
 import { useActiveSection } from "@/lib/use-active-section";
 import { PersonaToggle } from "@/components/persona-toggle";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { springSnappy } from "@/lib/motion";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
@@ -27,7 +29,7 @@ export function Nav() {
   return (
     <header
       className={clsx(
-        "fixed inset-x-0 top-0 z-50 border-b",
+        "fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300",
         scrolled
           ? "border-hairline bg-surface/80 backdrop-blur-md"
           : "border-transparent bg-transparent",
@@ -53,10 +55,17 @@ export function Nav() {
                 href={link.href}
                 aria-current={isActive ? "location" : undefined}
                 className={clsx(
-                  "rounded-full px-3 py-2 text-sm font-medium focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
+                  "relative rounded-full px-3 py-2 text-sm font-medium transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2",
                   isActive ? "text-ink" : "text-ink-muted hover:text-ink",
                 )}
               >
+                {isActive && (
+                  <motion.span
+                    layoutId="nav-active-pill"
+                    className="absolute inset-0 -z-10 rounded-full bg-ink/[0.07]"
+                    transition={springSnappy}
+                  />
+                )}
                 {link.label}
               </a>
             );
@@ -64,12 +73,12 @@ export function Nav() {
         </nav>
 
         <div className="hidden items-center gap-3 lg:flex">
-          <PersonaToggle />
+          <PersonaToggle scope="desktop" />
           <ThemeToggle />
           <a
             href={contact.resumeHref}
             download
-            className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-ink hover:opacity-90 focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+            className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
           >
             Download Résumé
           </a>
@@ -84,21 +93,35 @@ export function Nav() {
           onClick={() => setMenuOpen((v) => !v)}
         >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
-            {menuOpen ? (
-              <path
-                d="M3 3l12 12M15 3 3 15"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            ) : (
-              <path
-                d="M2 4.5h14M2 9h14M2 13.5h14"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {menuOpen ? (
+                <motion.path
+                  key="close"
+                  d="M3 3l12 12M15 3 3 15"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  initial={{ opacity: 0, rotate: -45 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: 45 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ transformOrigin: "center" }}
+                />
+              ) : (
+                <motion.path
+                  key="open"
+                  d="M2 4.5h14M2 9h14M2 13.5h14"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  initial={{ opacity: 0, rotate: 45 }}
+                  animate={{ opacity: 1, rotate: 0 }}
+                  exit={{ opacity: 0, rotate: -45 }}
+                  transition={{ duration: 0.18 }}
+                  style={{ transformOrigin: "center" }}
+                />
+              )}
+            </AnimatePresence>
           </svg>
         </button>
       </div>
@@ -121,13 +144,13 @@ export function Nav() {
           ))}
         </nav>
         <div className="flex items-center justify-between gap-3">
-          <PersonaToggle />
+          <PersonaToggle scope="mobile" />
           <ThemeToggle />
         </div>
         <a
           href={contact.resumeHref}
           download
-          className="rounded-full bg-accent px-4 py-3 text-center text-sm font-semibold text-accent-ink"
+          className="rounded-full bg-accent px-4 py-3 text-center text-sm font-semibold text-accent-ink transition-transform duration-150 active:scale-[0.97]"
         >
           Download Résumé
         </a>

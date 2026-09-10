@@ -2,8 +2,9 @@
 
 import { useState, type FormEvent } from "react";
 import { contact } from "@/lib/content";
-import { btnPrimary } from "@/lib/styles";
+import { btnPrimary, underlineLink } from "@/lib/styles";
 import { SectionHeading } from "./section-heading";
+import { Reveal } from "./motion/reveal";
 
 const inputClass =
   "w-full rounded-lg border border-hairline-strong bg-bg px-4 py-3 text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2";
@@ -27,10 +28,12 @@ export function Contact() {
       id="contact"
       className="section-pad section-gutter border-t border-hairline"
     >
-      <SectionHeading
-        title="Let's talk"
-        description="Open to Tier 2/3 SaaS support, ITSM, and dev-adjacent roles."
-      />
+      <Reveal>
+        <SectionHeading
+          title="Let's talk"
+          description="Open to Tier 2/3 SaaS support, ITSM, and dev-adjacent roles."
+        />
+      </Reveal>
 
       <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-5">
@@ -39,7 +42,7 @@ export function Contact() {
               <p className="text-sm text-ink-muted">Email</p>
               <a
                 href={`mailto:${contact.email}`}
-                className="text-lg text-ink underline decoration-hairline-strong underline-offset-4 hover:decoration-accent"
+                className={`text-lg text-ink ${underlineLink}`}
               >
                 {contact.email}
               </a>
@@ -48,7 +51,7 @@ export function Contact() {
               <p className="text-sm text-ink-muted">Phone</p>
               <a
                 href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}
-                className="text-lg text-ink underline decoration-hairline-strong underline-offset-4 hover:decoration-accent"
+                className={`text-lg text-ink ${underlineLink}`}
               >
                 {contact.phone}
               </a>
@@ -59,7 +62,7 @@ export function Contact() {
                 href={contact.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-lg text-ink underline decoration-hairline-strong underline-offset-4 hover:decoration-accent"
+                className={`text-lg text-ink ${underlineLink}`}
               >
                 linkedin.com/in/richu-thankachan
               </a>

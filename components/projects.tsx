@@ -1,9 +1,12 @@
 "use client";
 
 import clsx from "clsx";
+import { motion, useReducedMotion } from "motion/react";
 import { projects } from "@/lib/content";
 import { usePersona, emphasisFor } from "@/lib/persona-context";
+import { enterVariant, springSmooth, springSnappy, viewportOnce } from "@/lib/motion";
 import { SectionHeading } from "./section-heading";
+import { Reveal } from "./motion/reveal";
 
 function Field({
   label,
@@ -30,26 +33,40 @@ function Field({
 
 export function Projects() {
   const { view } = usePersona();
+  const reduceMotion = useReducedMotion();
+  // See motion/reveal.tsx for why this swaps whileInView for animate
+  // under reduced motion rather than just dropping the trigger.
+  const entranceTrigger = reduceMotion
+    ? { animate: "show" as const }
+    : { whileInView: "show" as const, viewport: viewportOnce };
 
   return (
     <section
       id="projects"
       className="section-pad section-gutter border-t border-hairline"
     >
-      <SectionHeading
-        title="Projects"
-        description="One case study is ready to publish; more are on the way."
-      />
+      <Reveal>
+        <SectionHeading
+          title="Projects"
+          description="One case study is ready to publish; more are on the way."
+        />
+      </Reveal>
 
       <div className="mt-12 grid gap-6">
         {projects.map((project) => {
           const state = emphasisFor(view, project.persona);
+          const fg = state === "fg";
           return (
-            <article
+            <motion.article
               key={project.name}
+              initial="hidden"
+              variants={enterVariant}
+              {...entranceTrigger}
+              whileHover={{ y: -5 }}
+              transition={springSnappy}
               className={clsx(
-                "surface-card rounded-2xl border p-8 sm:p-10",
-                state === "fg" ? "border-hairline-strong" : "border-hairline",
+                "surface-card rounded-2xl border p-8 transition-colors duration-200 sm:p-10",
+                fg ? "border-hairline-strong" : "border-hairline",
               )}
             >
               <div className="flex flex-wrap items-start justify-between gap-4">
@@ -61,10 +78,12 @@ export function Projects() {
                     {project.problem}
                   </p>
                 </div>
-                <span
+                <motion.span
+                  animate={{ opacity: fg ? 1 : 0.94, scale: fg ? 1 : 0.96 }}
+                  transition={springSmooth}
                   className={clsx(
-                    "shrink-0 rounded-full border px-3 py-1 font-mono text-xs",
-                    state === "fg"
+                    "shrink-0 rounded-full border px-3 py-1 font-mono text-xs transition-colors duration-200",
+                    fg
                       ? "border-hairline-strong text-ink"
                       : "border-hairline text-ink-recede",
                   )}
@@ -74,25 +93,27 @@ export function Projects() {
                     : project.persona === "support"
                       ? "Support"
                       : "Developer"}
-                </span>
+                </motion.span>
               </div>
 
               <dl className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                   <dt className="font-mono text-xs text-ink-muted">Stack</dt>
                   <dd className="mt-1 flex flex-wrap gap-1.5">
-                    {project.stack.map((tech) => (
-                      <span
+                    {project.stack.map((tech, i) => (
+                      <motion.span
                         key={tech}
+                        animate={{ opacity: fg ? 1 : 0.94, scale: fg ? 1 : 0.96 }}
+                        transition={{ ...springSmooth, delay: i * 0.03 }}
                         className={clsx(
-                          "rounded-full border px-2.5 py-1 text-sm",
-                          state === "fg"
+                          "rounded-full border px-2.5 py-1 text-sm transition-colors duration-200",
+                          fg
                             ? "border-hairline-strong text-ink"
                             : "border-hairline text-ink-recede",
                         )}
                       >
                         {tech}
-                      </span>
+                      </motion.span>
                     ))}
                   </dd>
                 </div>
@@ -112,7 +133,7 @@ export function Projects() {
                   todoHint="add a live/repo link"
                 />
               </dl>
-            </article>
+            </motion.article>
           );
         })}
       </div>
