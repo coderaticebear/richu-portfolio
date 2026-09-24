@@ -11,7 +11,6 @@ export const contact = {
   email: "richuthankachan96@gmail.com",
   phone: "+1 (249) 876-5856",
   linkedin: "https://www.linkedin.com/in/richu-thankachan",
-  resumeHref: "/resume.pdf",
 };
 
 export const roles = [

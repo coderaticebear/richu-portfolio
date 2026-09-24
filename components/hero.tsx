@@ -90,8 +90,13 @@ export function Hero() {
             <a href="#projects" className={btnPrimary}>
               View Projects
             </a>
-            <a href={contact.resumeHref} download className={btnSecondary}>
-              Download Résumé
+            <a
+              href={contact.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={btnSecondary}
+            >
+              LinkedIn
             </a>
             <a href="#contact" className={btnGhost}>
               Contact

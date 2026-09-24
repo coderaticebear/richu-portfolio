@@ -74,11 +74,12 @@ export function Nav() {
         <div className="hidden items-center gap-3 lg:flex">
           <ThemeToggle />
           <a
-            href={contact.resumeHref}
-            download
+            href={contact.linkedin}
+            target="_blank"
+            rel="noopener noreferrer"
             className="rounded-full bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
           >
-            Download Résumé
+            LinkedIn
           </a>
         </div>
 
@@ -145,11 +146,13 @@ export function Nav() {
           <ThemeToggle />
         </div>
         <a
-          href={contact.resumeHref}
-          download
+          href={contact.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setMenuOpen(false)}
           className="rounded-full bg-accent px-4 py-3 text-center text-sm font-semibold text-accent-ink transition-transform duration-150 active:scale-[0.97]"
         >
-          Download Résumé
+          LinkedIn
         </a>
       </div>
     </header>

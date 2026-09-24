@@ -1,28 +1,28 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("Résumé download", () => {
-  test("nav button links to a real PDF", async ({ page, request }) => {
+const LINKEDIN_URL = "https://www.linkedin.com/in/richu-thankachan";
+
+test.describe("LinkedIn call to action", () => {
+  test("nav button opens LinkedIn in a new tab", async ({ page }) => {
     await page.goto("/");
-    const link = page.getByRole("banner").getByRole("link", { name: /download résumé/i });
+    const link = page.getByRole("banner").getByRole("link", { name: /^linkedin$/i });
     await expect(link).toBeVisible();
-    await expect(link).toHaveAttribute("download", "");
-    const href = await link.getAttribute("href");
-    const resp = await request.get(new URL(href!, page.url()).toString());
-    expect(resp.status()).toBe(200);
-    expect(resp.headers()["content-type"]).toContain("application/pdf");
+    await expect(link).toHaveAttribute("href", LINKEDIN_URL);
+    await expect(link).toHaveAttribute("target", "_blank");
+    await expect(link).toHaveAttribute("rel", /noopener/);
   });
 
-  test("hero button links to the same PDF", async ({ page }) => {
+  test("hero button points at the same profile", async ({ page }) => {
     await page.goto("/");
-    const navHref = await page
-      .getByRole("banner")
-      .getByRole("link", { name: /download résumé/i })
-      .getAttribute("href");
-    const heroHref = await page
-      .getByRole("main")
-      .getByRole("link", { name: /download résumé/i })
-      .getAttribute("href");
-    expect(heroHref).toBe(navHref);
+    const hero = page.getByRole("main").getByRole("link", { name: /^linkedin$/i });
+    await expect(hero).toBeVisible();
+    await expect(hero).toHaveAttribute("href", LINKEDIN_URL);
+    await expect(hero).toHaveAttribute("target", "_blank");
+  });
+
+  test("no résumé download link remains", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByRole("link", { name: /résumé/i })).toHaveCount(0);
   });
 });
 
