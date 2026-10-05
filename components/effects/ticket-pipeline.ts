@@ -123,6 +123,9 @@ export function createTicketPipeline(canvas: HTMLCanvasElement, colors: ThemeCol
       step(i / 60, 1 / 60);
       draw();
     }
+    // The warm-up only fills the pipe; the tally counts what visitors watch.
+    counts.resolved = 0;
+    counts.escalated = 0;
   };
 
   return {

@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Richu Thankachan — portfolio
 
-## Getting Started
+Single-page portfolio for a Technical Support Engineer and full-stack developer. Built with Next.js 16 (App Router), React 19, Tailwind CSS 4, Motion and Lenis, with six hand-written canvas and WebGL effects and no 3D library.
 
-First, run the development server:
+## Running it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev            # http://localhost:3000
+npm run build && npm run start
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Tests
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The end-to-end suite uses Playwright with Chromium:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npx playwright install chromium   # once
+npm run test:e2e                  # builds, starts, and tests the production site
+npm run test:e2e:update-snapshots # after an intentional visual change
+```
 
-## Learn More
+Visual baselines mask every canvas, since GPU output varies between machines.
 
-To learn more about Next.js, take a look at the following resources:
+## Configuration
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_SITE_URL` | Absolute base URL for share-card links, e.g. `https://example.com`. Falls back to the Vercel production URL, then `http://localhost:3000`. |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Where things live
 
-## Deploy on Vercel
+- `lib/content.ts` holds all copy and data: experience, skills and how they link, projects, credentials. It's the single source of truth, written from the résumé.
+- `components/` has one file per page section.
+- `components/effects/` has the six effects (table below), each a plain module loaded on demand.
+- `lib/canvas/` is the runtime every effect shares: `use-canvas-effect.ts` (lazy loading, on-screen-only loop, pause, reduced motion, resizing, theme colors), plus WebGL, noise, and theme helpers.
+- `components/reveal.tsx`, `components/reveal-observer.tsx` and `app/globals.css` implement the scroll reveals. Content is only hidden after JavaScript has run, so the page is complete without it.
+- `e2e/` contains the Playwright specs.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## The effects
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Section | Effect | Built with |
+| --- | --- | --- |
+| Hero | Signal from Noise: static and broken traces that clear under the cursor | WebGL fragment shader |
+| How I work | Tickets flow through intake, reproduce, isolate, escalate | Canvas 2D, curl-noise particles |
+| Skills | Ping any skill and watch the reply travel through related ones | Canvas 2D network, breadth-first search |
+| Experience | Dotted globe flying the Kerala–Toronto route as you scroll | Canvas 2D orthographic projection |
+| Projects | Case-file previews dissolve from static into a diagram of the build | WebGL signed-distance shapes |
+| Contact | Spark burst when the ticket form is submitted | Canvas 2D |
+
+Every effect follows the same rules:
+
+- Its code loads only when its section is close.
+- It animates only while on screen.
+- It has a Pause control.
+- It shows a still frame when the visitor prefers reduced motion.
+- It redraws in the current theme's colors.
+
+Canvases are decorative (`aria-hidden`); every name, number and skill is real HTML.
+
+Press **D** anywhere (outside a form field) for debug mode: outlines, the column grid, and live measurements.
+
+## Share image
+
+`app/opengraph-image.png` is a 1200×630 capture of the live hero. Re-capture it if the hero changes.
+
+## Credits
+
+- **Switzer** by Indian Type Foundry, self-hosted under the Fontshare Free Font License (`public/fonts-license/Switzer-FFL.txt`).
+- **Geist Mono** by Vercel, SIL Open Font License, via `next/font/google`.
+- **Land outlines** from [Natural Earth](https://www.naturalearthdata.com/) 1:110m (public domain), via [world-atlas](https://github.com/topojson/world-atlas). They were sampled once into ~3,800 points in `lib/geo/land-dots.json`, stored as latitude/longitude × 10.

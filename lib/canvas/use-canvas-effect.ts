@@ -63,6 +63,7 @@ export function useCanvasEffect<E extends CanvasEffect>(
     let last = 0;
     let time = 0;
     let onScreen = false;
+    let lastSize = "";
 
     const tick = (now: number) => {
       const dt = Math.min(Math.max(0, (now - last) / 1000), 1 / 30);
@@ -96,10 +97,13 @@ export function useCanvasEffect<E extends CanvasEffect>(
       const dpr = Math.min(window.devicePixelRatio || 1, 2) * (lowPower.matches ? lowPowerScale : 1);
       const w = Math.max(1, Math.round(canvas.clientWidth * dpr));
       const h = Math.max(1, Math.round(canvas.clientHeight * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-      }
+      // ResizeObserver also fires when nothing changed (e.g. a screenshot);
+      // some effects rebuild their state on resize, so skip no-op calls.
+      const size = `${w}x${h}@${dpr}`;
+      if (size === lastSize) return;
+      lastSize = size;
+      canvas.width = w;
+      canvas.height = h;
       effect.resize(w, h, dpr);
       invalidate();
     };

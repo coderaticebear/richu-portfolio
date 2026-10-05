@@ -1,5 +1,6 @@
 import { contact } from "@/lib/content";
 import { underlineLink } from "@/lib/styles";
+import { DebugMode } from "./debug-mode";
 
 export function Footer() {
   return (
@@ -17,9 +18,12 @@ export function Footer() {
       </p>
       <div className="mt-5 flex flex-col items-start justify-between gap-3 text-sm text-ink-muted sm:flex-row sm:items-center">
         <p>© {new Date().getFullYear()} Richu Thankachan. Built with Next.js.</p>
-        <a href={`mailto:${contact.email}`} className={underlineLink}>
-          {contact.email}
-        </a>
+        <div className="flex flex-wrap items-center gap-4">
+          <a href={`mailto:${contact.email}`} className={underlineLink}>
+            {contact.email}
+          </a>
+          <DebugMode />
+        </div>
       </div>
     </footer>
   );

@@ -57,10 +57,12 @@ export const places: Record<PlaceId, Place> = {
   toronto: { label: "Toronto", lat: 43.65, lon: -79.38 },
 };
 
+// Shown as the rows of a service status page in About. `service` is the
+// row name; the figures are the résumé's own.
 export const metrics = [
-  { value: 1000, suffix: "+", label: "end-users supported" },
-  { value: 95, suffix: "%+", label: "SLA compliance" },
-  { value: 40, suffix: "%", label: "backend performance improvement" },
+  { service: "End-user support", value: 1000, suffix: "+", label: "end-users supported" },
+  { service: "SLA compliance", value: 95, suffix: "%+", label: "of tickets within SLA" },
+  { service: "Backend performance", value: 40, suffix: "%", label: "gained from MongoDB tuning" },
 ];
 
 export const skillGroups: SkillGroup[] = [

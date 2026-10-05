@@ -25,6 +25,9 @@
      identifiable on its own — calibrated to clear 3:1 against the page
      background, unlike the quieter grouping hairlines above. */
   --color-control-border: rgba(255, 255, 255, 0.4);
+  /* Semantic "operational" green for the status-page About. On a status
+     page amber reads as "degraded", so the brand accent can't do this job. */
+  --color-ok: #5fcf8e;
   --shadow-card:
     0 1px 0 0 rgba(255, 255, 255, 0.05) inset,
     0 16px 32px -20px rgba(0, 0, 0, 0.65);
@@ -51,6 +54,7 @@
   --color-hairline: rgba(20, 23, 26, 0.09);
   --color-hairline-strong: rgba(20, 23, 26, 0.16);
   --color-control-border: rgba(20, 23, 26, 0.5);
+  --color-ok: #1d7a47;
   --shadow-card:
     0 1px 0 0 rgba(255, 255, 255, 0.6) inset,
     0 16px 32px -22px rgba(20, 23, 26, 0.18);
@@ -71,6 +75,7 @@
   --color-hairline: var(--color-hairline);
   --color-hairline-strong: var(--color-hairline-strong);
   --color-control-border: var(--color-control-border);
+  --color-ok: var(--color-ok);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -188,6 +193,77 @@ html[data-reveal-ready] [data-reveal="mask"]:not([data-revealed]) .split-word > 
 html[data-reveal-ready] [data-reveal="group"]:not([data-revealed]) .progress-fill,
 html[data-reveal-ready] [data-reveal=""]:not([data-revealed]) .progress-fill {
   transform: scaleX(0);
+}
+
+/* Status-page "operational" dot. Pulses a few times, then rests (a
+   forever-blinking element would need its own pause control). */
+.status-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: var(--color-ok);
+  animation: status-pulse 2.4s ease-out 3;
+}
+@keyframes status-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-ok) 55%, transparent); }
+  100% { box-shadow: 0 0 0 0.6rem color-mix(in srgb, var(--color-ok) 0%, transparent); }
+}
+
+/*
+  Debug mode (press D, or the footer toggle): outlines, a 12-column grid
+  on the page gutter, section ids, and a HUD with live measurements.
+*/
+html[data-debug] main :is(section, article, div, ul, ol, li, dl, form, fieldset, p, h1, h2, h3, canvas, pre) {
+  outline: 1px solid color-mix(in srgb, var(--color-accent) 32%, transparent);
+  outline-offset: -1px;
+}
+html[data-debug] main > section {
+  position: relative;
+}
+html[data-debug] main > section::before {
+  content: "#" attr(id);
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 5;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.3rem;
+  background: var(--color-accent);
+  color: var(--color-accent-ink);
+  font: 500 0.7rem/1.4 var(--font-mono), monospace;
+}
+.debug-grid {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 2rem;
+  padding-inline: clamp(1.25rem, 6vw, 6rem);
+}
+.debug-grid > span {
+  background: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  border-inline: 1px solid color-mix(in srgb, var(--color-accent) 22%, transparent);
+}
+@keyframes debug-glitch {
+  0% { opacity: 1; transform: translateX(0); clip-path: inset(0 0 70% 0); }
+  20% { transform: translateX(-6px); clip-path: inset(30% 0 40% 0); }
+  40% { transform: translateX(5px); clip-path: inset(60% 0 10% 0); }
+  60% { transform: translateX(-3px); clip-path: inset(10% 0 55% 0); }
+  80% { transform: translateX(2px); clip-path: inset(75% 0 5% 0); }
+  100% { opacity: 0; transform: translateX(0); clip-path: inset(0 0 0 0); }
+}
+.debug-glitch {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, color-mix(in srgb, var(--color-accent) 18%, transparent) 0 2px, transparent 2px 5px),
+    linear-gradient(90deg, rgba(255, 0, 80, 0.08), rgba(0, 200, 255, 0.08));
+  mix-blend-mode: difference;
+  animation: debug-glitch 0.28s steps(5) forwards;
 }
 
 /* Hero entrance: pure CSS, so it plays (and finishes visible) without JavaScript. */
