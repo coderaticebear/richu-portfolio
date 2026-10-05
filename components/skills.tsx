@@ -83,9 +83,14 @@ export function Skills() {
           >
             $ click a skill to ping it
           </pre>
-          {status === "ready" ? (
-            <PauseButton paused={paused} onToggle={togglePause} label="skill map animation" />
-          ) : null}
+          {/* Always rendered so the toolbar's height never changes after load;
+              hidden (and out of the tab order) until the effect is running. */}
+          <PauseButton
+            paused={paused}
+            onToggle={togglePause}
+            label="skill map animation"
+            className={status === "ready" ? undefined : "invisible"}
+          />
         </div>
       </Reveal>
       <p className="sr-only" aria-live="polite">

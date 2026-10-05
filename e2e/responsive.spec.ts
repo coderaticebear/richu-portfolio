@@ -46,27 +46,18 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       }
     });
 
-    test("Experience cards never overflow their scroll wrapper", async ({ page }) => {
-      // Regression check for the overlap bug: a card's rendered height
-      // must never exceed the wrapper it sticks within, since sticky
-      // positioning doesn't clip a card to its container.
+    test("the Experience globe never covers the role cards", async ({ page }) => {
       await page.goto("/");
       await page.locator("#experience").scrollIntoViewIfNeeded();
       await page.waitForTimeout(400);
-      const results = await page.evaluate(() => {
-        const items = Array.from(document.querySelectorAll("#experience ol > li"));
-        return items.map((li) => {
-          const card = li.querySelector(":scope > div") as HTMLElement;
-          return {
-            wrapperHeight: li.getBoundingClientRect().height,
-            cardHeight: card.getBoundingClientRect().height,
-          };
-        });
+      const overlap = await page.evaluate(() => {
+        const globe = document.querySelector("#experience canvas")!.parentElement!.getBoundingClientRect();
+        const list = document.querySelector("#experience ol")!.getBoundingClientRect();
+        const w = Math.min(globe.right, list.right) - Math.max(globe.left, list.left);
+        const h = Math.min(globe.bottom, list.bottom) - Math.max(globe.top, list.top);
+        return w > 0 && h > 0 ? w * h : 0;
       });
-      expect(results.length).toBe(3);
-      for (const r of results) {
-        expect(r.wrapperHeight).toBeGreaterThanOrEqual(r.cardHeight);
-      }
+      expect(overlap).toBe(0);
     });
   });
 }

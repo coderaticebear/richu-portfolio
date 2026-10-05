@@ -2,21 +2,32 @@ import { test, expect } from "@playwright/test";
 
 test.use({ reducedMotion: "reduce" });
 
+// Counts requestAnimationFrame callbacks so a test can prove nothing is looping.
+const countFrames = () => {
+  const w = window as unknown as { __frames: number };
+  w.__frames = 0;
+  const raf = window.requestAnimationFrame.bind(window);
+  window.requestAnimationFrame = (cb) => {
+    w.__frames++;
+    return raf(cb);
+  };
+};
+
 test.describe("prefers-reduced-motion: reduce", () => {
-  test("hero content is fully visible immediately, no entrance stagger", async ({ page }) => {
+  test("hero content is fully visible immediately, no entrance animation", async ({ page }) => {
     await page.goto("/");
     await page.waitForTimeout(150);
-    const stuck = await page.evaluate(() => {
-      const found: string[] = [];
-      document.querySelectorAll("h1 span").forEach((span) => {
-        const t = getComputedStyle(span).transform;
-        if (t && t !== "none" && !t.startsWith("matrix(1, 0, 0, 1, 0, 0)")) {
-          found.push(t);
-        }
-      });
-      return found;
-    });
-    expect(stuck).toEqual([]);
+    const styles = await page.evaluate(() =>
+      Array.from(document.querySelectorAll("#top .hero-in")).map((el) => {
+        const s = getComputedStyle(el);
+        return { opacity: s.opacity, animation: s.animationName };
+      }),
+    );
+    expect(styles.length).toBeGreaterThan(0);
+    for (const s of styles) {
+      expect(s.opacity).toBe("1");
+      expect(s.animation).toBe("none");
+    }
     await expect(page.getByRole("link", { name: "View Projects" })).toBeVisible();
   });
 
@@ -49,18 +60,23 @@ test.describe("prefers-reduced-motion: reduce", () => {
     expect(stuck).toEqual([]);
   });
 
-  test("Experience cards render without the scroll-linked scale/opacity transform applied", async ({
-    page,
-  }) => {
+  test("canvas effects start paused and nothing animates on its own", async ({ page }) => {
+    await page.addInitScript(countFrames);
     await page.goto("/");
-    await page.locator("#experience").scrollIntoViewIfNeeded();
-    await page.waitForTimeout(200);
-    const style = await page
-      .locator("#experience ol > li")
-      .first()
-      .locator(":scope > div")
-      .evaluate((el) => getComputedStyle(el).opacity);
-    expect(style).toBe("1");
+    const hero = page.locator("#top");
+    await expect(hero.getByRole("button", { name: /play background animation/i })).toBeVisible();
+
+    for (const id of ["process", "skills", "experience"]) {
+      await page.locator(`#${id}`).scrollIntoViewIfNeeded();
+      await expect(page.locator(`#${id}`).getByRole("button", { name: /^play /i }).first()).toBeVisible();
+    }
+
+    // Settle, then measure an idle second: a paused page schedules (almost) no frames.
+    await page.waitForTimeout(500);
+    await page.evaluate(() => ((window as unknown as { __frames: number }).__frames = 0));
+    await page.waitForTimeout(1000);
+    const frames = await page.evaluate(() => (window as unknown as { __frames: number }).__frames);
+    expect(frames).toBeLessThan(10);
   });
 
   test("credentials progress bars still land on the right value instantly", async ({ page }) => {

@@ -39,10 +39,20 @@ export function CountUp({ value, suffix = "" }: { value: number; suffix?: string
     };
   }, [count, value]);
 
+  // The final value sits invisibly in the same grid cell, so the box is
+  // always as wide as the real number: counting up from "0%" can't reflow
+  // the text around it (a narrower number once let a title rewrap and
+  // shifted everything below by 28px).
   return (
-    <span ref={ref}>
-      <motion.span>{text}</motion.span>
-      {suffix}
+    <span className="inline-grid">
+      <span aria-hidden="true" className="invisible col-start-1 row-start-1">
+        {format(value)}
+        {suffix}
+      </span>
+      <span ref={ref} className="col-start-1 row-start-1">
+        <motion.span>{text}</motion.span>
+        {suffix}
+      </span>
     </span>
   );
 }

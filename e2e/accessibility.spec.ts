@@ -1,14 +1,12 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import type { Result } from "axe-core";
 
-// Two elements on the page are deliberately low-contrast: Experience's
-// corner ordinal numbers (01/02/03) and the footer's closing wordmark.
-// Both are aria-hidden="true" background watermarks, not content anyone
-// is meant to read — WCAG 1.4.3 explicitly exempts pure decoration from
-// its contrast requirement. Reaching 3:1 on the ordinals alone would need
-// roughly 45%+ opacity, which would turn a background flourish into a
-// second thing competing for attention; same logic for the wordmark.
+// Decorative text is allowed to be low-contrast: the footer's closing
+// wordmark and the canvas effects' stage labels are aria-hidden="true"
+// backdrops, not content anyone is meant to read — WCAG 1.4.3 explicitly
+// exempts pure decoration from its contrast requirement. Raising the
+// wordmark to 3:1 would turn a quiet sign-off into a second headline.
 // Matching on aria-hidden="true" itself (not a class name or selector,
 // which would silently stop matching the moment a class changes) is the
 // actual semantic signal that something was deliberately marked
@@ -20,10 +18,21 @@ function isAcceptedViolation(violation: Result) {
   return violation.nodes.every((n) => n.html.includes('aria-hidden="true"'));
 }
 
+// axe reads colors as they are at scan time, so let the hero's CSS
+// entrance (a fade from transparent) finish first.
+async function settle(page: Page) {
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .every((a) => !(a instanceof CSSAnimation && a.animationName === "hero-in") || a.playState === "finished"),
+  );
+}
+
 test.describe("Automated accessibility scan (axe-core, WCAG 2.1 A/AA)", () => {
   for (const theme of ["dark", "light"] as const) {
     test(`no unexpected violations in ${theme} mode`, async ({ page }) => {
       await page.goto("/");
+      await settle(page);
       if (theme === "light") {
         await page.getByRole("button", { name: /switch to light mode/i }).click();
         await page.waitForTimeout(200);
@@ -42,6 +51,7 @@ test.describe("Automated accessibility scan (axe-core, WCAG 2.1 A/AA)", () => {
 
   test("no critical or serious violations at all, including the accepted one", async ({ page }) => {
     await page.goto("/");
+    await settle(page);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();

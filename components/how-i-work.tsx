@@ -55,9 +55,14 @@ export function HowIWork() {
             <span ref={resolvedRef} className="text-accent-text">0</span> resolved ·{" "}
             <span ref={escalatedRef} className="text-ink">0</span> sent to engineering
           </span>
-          {status === "ready" ? (
-            <PauseButton paused={paused} onToggle={togglePause} label="ticket pipeline animation" />
-          ) : null}
+          {/* Always rendered so the toolbar's height never changes after load;
+              hidden (and out of the tab order) until the effect is running. */}
+          <PauseButton
+            paused={paused}
+            onToggle={togglePause}
+            label="ticket pipeline animation"
+            className={status === "ready" ? undefined : "invisible"}
+          />
         </div>
       </Reveal>
 
