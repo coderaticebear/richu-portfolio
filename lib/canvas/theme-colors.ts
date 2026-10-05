@@ -50,6 +50,18 @@ export function readThemeColors(): ThemeColors {
   };
 }
 
+/**
+ * next/font hashes family names, so canvas text has to look them up from
+ * the CSS variables next/font puts on <html>.
+ */
+export function readFonts(): { sans: string; mono: string } {
+  const style = getComputedStyle(document.documentElement);
+  return {
+    sans: style.getPropertyValue("--font-switzer").trim() || "sans-serif",
+    mono: style.getPropertyValue("--font-geist-mono").trim() || "monospace",
+  };
+}
+
 /** CSS color string from an RGB triplet, for Canvas 2D. */
 export function css(c: RGB, alpha = 1): string {
   return `rgba(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)},${alpha})`;

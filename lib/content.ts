@@ -2,6 +2,9 @@ import type {
   Credential,
   EducationEntry,
   ExperienceEntry,
+  MethodStep,
+  Place,
+  PlaceId,
   Project,
   SkillGroup,
 } from "./types";
@@ -24,6 +27,34 @@ export const summaryShort =
 
 export const summaryFull =
   "Technical Support Engineer with 3+ years resolving complex SaaS, network, and application issues for 1,000+ end-users, applying a structured troubleshooting methodology (intake, reproduce, isolate, escalate) backed by a hands-on software development background in React, Node.js, and SQL databases. Proven track record improving SLA compliance, first-call resolution, and release quality — currently expanding ITIL and Azure cloud credentials to support Tier 2/3 SaaS environments.";
+
+// The structured troubleshooting method named in the résumé summary
+// (intake, reproduce, isolate, escalate), each step described from the
+// résumé's own bullets. The "How I work" pipeline animates these.
+export const methodology: MethodStep[] = [
+  {
+    title: "Intake",
+    text: "Log who is affected, what they saw and when, then set the priority against the SLA.",
+  },
+  {
+    title: "Reproduce",
+    text: "Recreate the problem from the user's steps, the logs, and diagnostics before changing anything.",
+  },
+  {
+    title: "Isolate",
+    text: "Narrow it to one layer: the network (DNS, DHCP, VPN, Wi-Fi), the application, or access and configuration.",
+  },
+  {
+    title: "Escalate or resolve",
+    text: "Fix it and write it up in the knowledge base, or hand a confirmed defect to engineering with full technical context.",
+  },
+];
+
+// Map positions for the Experience globe.
+export const places: Record<PlaceId, Place> = {
+  kerala: { label: "Kerala", lat: 10.0, lon: 76.3 },
+  toronto: { label: "Toronto", lat: 43.65, lon: -79.38 },
+};
 
 export const metrics = [
   { value: 1000, suffix: "+", label: "end-users supported" },
@@ -112,6 +143,7 @@ export const skillGroups: SkillGroup[] = [
 export const experience: ExperienceEntry[] = [
   {
     company: "Concentrix",
+    place: "toronto",
     location: "Toronto, CA",
     role: "Advisor II, Technical Support Engineer",
     period: "Oct 2024 – Present",
@@ -136,6 +168,7 @@ export const experience: ExperienceEntry[] = [
   },
   {
     company: "BuyerFolio",
+    place: "toronto",
     location: "Toronto, CA",
     role: "Application Support Analyst (Intern)",
     period: "May 2023 – Aug 2023",
@@ -157,6 +190,7 @@ export const experience: ExperienceEntry[] = [
   },
   {
     company: "D'Katia Software Solutions",
+    place: "kerala",
     location: "Kerala, IN",
     role: "Software Engineer",
     period: "Aug 2018 – Mar 2021",
@@ -239,6 +273,7 @@ export const education: EducationEntry[] = [
 
 export const navLinks = [
   { href: "#about", label: "About" },
+  { href: "#process", label: "Process" },
   { href: "#skills", label: "Skills" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },

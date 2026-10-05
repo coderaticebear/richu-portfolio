@@ -3,13 +3,28 @@ export interface SkillGroup {
   items: { name: string }[];
 }
 
+export type PlaceId = "toronto" | "kerala";
+
+export interface Place {
+  label: string;
+  lat: number;
+  lon: number;
+}
+
 export interface ExperienceEntry {
   company: string;
   location: string;
+  /** Where on the Experience globe this role sits. */
+  place: PlaceId;
   role: string;
   period: string;
   current: boolean;
   bullets: { text: string }[];
+}
+
+export interface MethodStep {
+  title: string;
+  text: string;
 }
 
 export interface Project {

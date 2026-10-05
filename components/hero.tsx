@@ -1,127 +1,89 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { roles, contact } from "@/lib/content";
+import type { CSSProperties, PointerEvent } from "react";
+import { contact, roles } from "@/lib/content";
 import { btnPrimary, btnSecondary, btnGhost } from "@/lib/styles";
-import { enterVariant, staggerContainer, springSmooth } from "@/lib/motion";
+import { useCanvasEffect } from "@/lib/canvas/use-canvas-effect";
 import { usePointerCapable } from "@/lib/use-pointer-capable";
-import { SplitReveal } from "./motion/split-reveal";
+import { EffectCanvas, PauseButton } from "./effect-controls";
 
-const ROLE_INTERVAL_MS = 2600;
+const loadSignalField = () => import("./effects/signal-field").then((m) => m.createSignalField);
+
+// Stagger index for the CSS entrance (see .hero-in in globals.css).
+const enter = (i: number) => ({ "--d": i }) as CSSProperties;
 
 export function Hero() {
-  const [roleIndex, setRoleIndex] = useState(0);
+  const { canvasRef, effectRef, status, paused, togglePause, invalidate } = useCanvasEffect(
+    loadSignalField,
+    { lowPowerScale: 0.6 },
+  );
   const pointerCapable = usePointerCapable();
-  const reduceMotion = useReducedMotion();
-  const { scrollY } = useScroll();
-  // Subtle drift on the background glow only — never on the text, only for
-  // devices with a real pointer/scroll wheel (not touch), and off entirely
-  // under reduced motion — parallax is a vestibular trigger.
-  const parallaxDistance = pointerCapable && !reduceMotion ? 120 : 0;
-  const parallaxY = useTransform(scrollY, [0, 800], [0, parallaxDistance]);
 
-  useEffect(() => {
-    const prefersReduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)",
-    ).matches;
-    if (prefersReduced) return;
-
-    const id = window.setInterval(() => {
-      setRoleIndex((i) => (i + 1) % roles.length);
-    }, ROLE_INTERVAL_MS);
-    return () => window.clearInterval(id);
-  }, []);
+  function trackPointer(e: PointerEvent<HTMLElement>) {
+    // Touch keeps the idle drift; a finger dragging the lens fights scrolling.
+    if (e.pointerType !== "mouse") return;
+    const rect = canvasRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    effectRef.current?.setPointer(
+      (e.clientX - rect.left) / rect.width,
+      1 - (e.clientY - rect.top) / rect.height,
+    );
+    invalidate();
+  }
 
   return (
     <section
       id="top"
-      className="relative overflow-hidden pt-36 pb-24 lg:pt-52 lg:pb-36"
+      onPointerMove={trackPointer}
+      onPointerLeave={() => effectRef.current?.releasePointer()}
+      className="relative isolate flex min-h-[88svh] flex-col justify-end overflow-hidden pt-36 pb-24 lg:pb-32"
     >
       <div id="top-sentinel" className="absolute top-0 left-0 h-px w-px" />
-
-      {/* ambient background — a fixed pair of soft gradient fields, not particles */}
-      <motion.div
-        aria-hidden="true"
-        style={{ y: parallaxY }}
-        className="pointer-events-none absolute inset-0 -z-10"
-      >
-        <div className="absolute -right-40 -top-40 h-[36rem] w-[36rem] rounded-full bg-accent/20 blur-[120px]" />
-        <div className="absolute right-10 top-60 h-[24rem] w-[24rem] rounded-full bg-accent/10 blur-[100px]" />
-      </motion.div>
+      <div aria-hidden="true" className="hero-fallback absolute inset-0 -z-10" />
+      <EffectCanvas canvasRef={canvasRef} status={status} className="absolute inset-0 -z-10" />
 
       <div className="section-gutter">
-        <motion.div initial="hidden" animate="show" variants={staggerContainer(0.12, 0.05)}>
-          <h1 className="text-[clamp(2.75rem,8.5vw,7rem)] leading-[0.96] font-semibold tracking-[-0.02em] text-ink">
-            <SplitReveal text="Richu Thankachan" by="char" trigger="mount" stagger={0.02} />
-          </h1>
-
-          <motion.p
-            variants={enterVariant}
-            className="mt-5 h-8 font-mono text-xl text-accent-text sm:h-9 sm:text-2xl"
-            aria-live="polite"
-          >
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={roleIndex}
-                initial={{ opacity: 0, y: 8, filter: "blur(3px)" }}
-                animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                exit={{ opacity: 0, y: -6, filter: "blur(3px)" }}
-                transition={springSmooth}
-                className="inline-block"
-              >
-                {roles[roleIndex]}
-              </motion.span>
-            </AnimatePresence>
-          </motion.p>
-
-          <motion.p
-            variants={enterVariant}
-            className="content-col mt-6 text-lg text-ink-muted sm:text-xl"
-          >
-            I resolve SaaS, network, and application issues fast — and
-            understand the code and systems behind them.
-          </motion.p>
-
-          <motion.div
-            variants={enterVariant}
-            className="mt-10 flex flex-wrap items-center gap-3"
-          >
-            <a href="#projects" className={btnPrimary}>
-              View Projects
-            </a>
-            <a
-              href={contact.linkedin}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={btnSecondary}
-            >
-              LinkedIn
-            </a>
-            <a href="#contact" className={btnGhost}>
-              Contact
-            </a>
-          </motion.div>
-        </motion.div>
+        <p className="hero-in font-mono text-xs tracking-[0.12em] text-accent-text uppercase" style={enter(0)}>
+          {contact.location} · open to Tier 2/3 SaaS roles
+        </p>
+        <h1
+          className="hero-in hero-shadow mt-5 text-[clamp(2.75rem,8.5vw,7rem)] leading-[0.95] font-semibold tracking-[-0.025em] text-ink"
+          style={enter(1)}
+        >
+          Richu Thankachan
+        </h1>
+        <p className="hero-in hero-shadow mt-5 font-mono text-base text-accent-text sm:text-xl" style={enter(2)}>
+          {roles.join(" · ")}
+        </p>
+        <p
+          className="hero-in hero-shadow content-col mt-6 text-lg text-ink-muted sm:text-xl"
+          style={enter(3)}
+        >
+          I resolve SaaS, network, and application issues fast — and understand the code and
+          systems behind them.
+        </p>
+        <div className="hero-in mt-10 flex flex-wrap items-center gap-3" style={enter(4)}>
+          <a href="#projects" className={btnPrimary}>
+            View Projects
+          </a>
+          <a href={contact.linkedin} target="_blank" rel="noopener noreferrer" className={btnSecondary}>
+            LinkedIn
+          </a>
+          <a href="#contact" className={btnGhost}>
+            Contact
+          </a>
+        </div>
       </div>
 
-      <div
-        aria-hidden="true"
-        className="absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 text-ink-muted sm:flex"
-      >
-        <span className="font-mono text-xs tracking-wide">scroll</span>
-        <svg width="14" height="20" viewBox="0 0 14 20" fill="none">
-          <rect
-            x="1"
-            y="1"
-            width="12"
-            height="18"
-            rx="6"
-            stroke="currentColor"
-            strokeWidth="1.2"
-          />
-          <circle cx="7" cy="6" r="1.4" fill="currentColor" />
-        </svg>
+      <div className="section-gutter absolute inset-x-0 bottom-5 flex items-center justify-end gap-4">
+        {pointerCapable && status === "ready" && !paused ? (
+          <span className="hidden font-mono text-xs text-ink-muted md:inline">
+            Move your cursor over the noise
+          </span>
+        ) : null}
+        {status === "ready" ? (
+          <PauseButton paused={paused} onToggle={togglePause} label="background animation" />
+        ) : null}
       </div>
     </section>
   );
