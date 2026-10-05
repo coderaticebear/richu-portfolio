@@ -1,6 +1,10 @@
+export type SkillGroupKey = "itsm" | "docs" | "net" | "tools" | "code" | "os";
+
 export interface SkillGroup {
+  key: SkillGroupKey;
   label: string;
-  items: { name: string }[];
+  /** `short` is the label on the Skills network map, where space is tight. */
+  items: { name: string; short?: string }[];
 }
 
 export type PlaceId = "toronto" | "kerala";
@@ -30,10 +34,17 @@ export interface MethodStep {
 export interface Project {
   name: string;
   problem: string;
-  role: string | null;
+  role: string;
   stack: string[];
-  outcome: string | null;
+  outcome: string;
   link: string | null;
+  /** Which generated diagram the project's case-file header draws. */
+  diagram: "relational" | "router";
+}
+
+export interface ContactPriority {
+  code: string;
+  label: string;
 }
 
 export interface Credential {

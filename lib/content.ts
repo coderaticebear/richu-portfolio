@@ -1,4 +1,5 @@
 import type {
+  ContactPriority,
   Credential,
   EducationEntry,
   ExperienceEntry,
@@ -64,29 +65,32 @@ export const metrics = [
 
 export const skillGroups: SkillGroup[] = [
   {
+    key: "itsm",
     label: "Technical Support & ITSM",
     items: [
       { name: "Tier 1/2/3 Support" },
-      { name: "SaaS & Application Support" },
+      { name: "SaaS & Application Support", short: "SaaS support" },
       { name: "Incident Management" },
       { name: "Root Cause Analysis" },
       { name: "SLA Compliance" },
       { name: "UAT" },
       { name: "Release Validation" },
-      { name: "Structured Troubleshooting" },
+      { name: "Structured Troubleshooting", short: "Troubleshooting" },
     ],
   },
   {
+    key: "docs",
     label: "Documentation & Escalation",
     items: [
       { name: "Bug Reporting" },
       { name: "Log Analysis" },
-      { name: "Reproduction Steps" },
-      { name: "Knowledge Base Authoring" },
-      { name: "Cross-Team Escalation" },
+      { name: "Reproduction Steps", short: "Repro steps" },
+      { name: "Knowledge Base Authoring", short: "Knowledge base" },
+      { name: "Cross-Team Escalation", short: "Escalation" },
     ],
   },
   {
+    key: "net",
     label: "Networking",
     items: [
       { name: "TCP/IP" },
@@ -95,10 +99,11 @@ export const skillGroups: SkillGroup[] = [
       { name: "VPN" },
       { name: "Wi-Fi" },
       { name: "Firewalls" },
-      { name: "Router Configuration" },
+      { name: "Router Configuration", short: "Routers" },
     ],
   },
   {
+    key: "tools",
     label: "Tools & Platforms",
     items: [
       { name: "ServiceNow" },
@@ -112,6 +117,7 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
+    key: "code",
     label: "Programming & Databases",
     items: [
       { name: "JavaScript" },
@@ -131,6 +137,7 @@ export const skillGroups: SkillGroup[] = [
     ],
   },
   {
+    key: "os",
     label: "Operating Systems",
     items: [
       { name: "Windows" },
@@ -138,6 +145,80 @@ export const skillGroups: SkillGroup[] = [
       { name: "Linux" },
     ],
   },
+];
+
+// How skills relate, for the Skills network map: a ping from one skill
+// travels along these links. Grouped by the area each link crosses.
+export const skillLinks: [string, string][] = [
+  // support practice
+  ["Tier 1/2/3 Support", "Incident Management"],
+  ["Tier 1/2/3 Support", "SaaS & Application Support"],
+  ["Incident Management", "SLA Compliance"],
+  ["Incident Management", "Root Cause Analysis"],
+  ["Root Cause Analysis", "Structured Troubleshooting"],
+  ["Structured Troubleshooting", "Reproduction Steps"],
+  ["Structured Troubleshooting", "Log Analysis"],
+  ["Log Analysis", "Root Cause Analysis"],
+  ["UAT", "Release Validation"],
+  ["Bug Reporting", "Reproduction Steps"],
+  ["Cross-Team Escalation", "Bug Reporting"],
+  ["Cross-Team Escalation", "Incident Management"],
+  ["Knowledge Base Authoring", "Tier 1/2/3 Support"],
+  // support ↔ tools
+  ["Incident Management", "ServiceNow"],
+  ["SLA Compliance", "ServiceNow"],
+  ["SLA Compliance", "Zendesk"],
+  ["Zendesk", "Tier 1/2/3 Support"],
+  ["Salesforce", "Zendesk"],
+  ["SaaS & Application Support", "Salesforce"],
+  ["Bug Reporting", "Jira"],
+  ["UAT", "Jira"],
+  ["UAT", "Postman"],
+  ["Release Validation", "Git"],
+  ["Knowledge Base Authoring", "Notion"],
+  ["Jira", "Git"],
+  ["Git", "Docker"],
+  // networking
+  ["TCP/IP", "DNS"],
+  ["TCP/IP", "DHCP"],
+  ["TCP/IP", "VPN"],
+  ["TCP/IP", "Firewalls"],
+  ["TCP/IP", "Router Configuration"],
+  ["DNS", "DHCP"],
+  ["Wi-Fi", "Router Configuration"],
+  ["Wi-Fi", "DHCP"],
+  ["VPN", "Firewalls"],
+  ["Router Configuration", "Firewalls"],
+  ["Structured Troubleshooting", "TCP/IP"],
+  // code and data
+  ["JavaScript", "TypeScript"],
+  ["TypeScript", "React"],
+  ["JavaScript", "React"],
+  ["JavaScript", "Node.js"],
+  ["Postman", "Node.js"],
+  ["Node.js", "MongoDB"],
+  ["PHP", "MySQL"],
+  ["SQL", "MySQL"],
+  ["SQL", "PostgreSQL"],
+  ["SQL", "Oracle"],
+  ["Python", "SQL"],
+  ["Java", "Oracle"],
+  ["Java", "C"],
+  [".NET", "C"],
+  ["SaaS & Application Support", "SQL"],
+  ["Docker", "PostgreSQL"],
+  // operating systems
+  ["Linux", "Windows"],
+  ["Windows", "macOS"],
+  ["Linux", "macOS"],
+  ["Log Analysis", "Linux"],
+  ["Log Analysis", "Windows"],
+  ["Docker", "Linux"],
+  ["Python", "Linux"],
+  [".NET", "Windows"],
+  ["Windows", "VPN"],
+  ["macOS", "Wi-Fi"],
+  ["Linux", "Firewalls"],
 ];
 
 export const experience: ExperienceEntry[] = [
@@ -226,6 +307,7 @@ export const projects: Project[] = [
     outcome:
       "Fully working locally — migrations, seeders, and a Dockerized environment via Laravel Sail. Not yet deployed publicly.",
     link: "https://github.com/coderaticebear/school_erp",
+    diagram: "relational",
   },
   {
     name: "Leaf PHP",
@@ -236,6 +318,7 @@ export const projects: Project[] = [
     outcome:
       "A working custom router, request/response handling, and a CLI to scaffold and serve independent services.",
     link: "https://github.com/coderaticebear/leaf-php",
+    diagram: "router",
   },
 ];
 
@@ -269,6 +352,15 @@ export const education: EducationEntry[] = [
     credential: "B.Tech, Computer Science and Engineering",
     period: "Apr 2014 – Apr 2018",
   },
+];
+
+// Priority on the contact "ticket". The code and label go into the email
+// subject line so the most time-sensitive messages stand out.
+export const contactPriorities: ContactPriority[] = [
+  { code: "P1", label: "Urgent hire" },
+  { code: "P2", label: "Open role" },
+  { code: "P3", label: "Networking" },
+  { code: "P4", label: "Just saying hi" },
 ];
 
 export const navLinks = [

@@ -30,7 +30,7 @@ test.describe("Contact form", () => {
   test("requires name, email, and message before it can submit", async ({ page }) => {
     await page.goto("/");
     await page.locator("#contact").scrollIntoViewIfNeeded();
-    const submit = page.getByRole("button", { name: /send message/i });
+    const submit = page.getByRole("button", { name: /submit ticket/i });
     await submit.click();
     // native HTML5 validation blocks submission and focuses the first
     // invalid field — the page must not have "submitted" (no reload)
@@ -58,7 +58,7 @@ test.describe("Contact form", () => {
     const urlBefore = page.url();
     const errors: string[] = [];
     page.on("pageerror", (e) => errors.push(e.message));
-    await page.getByRole("button", { name: /send message/i }).click();
+    await page.getByRole("button", { name: /submit ticket/i }).click();
     await page.waitForTimeout(300);
     expect(page.url()).toBe(urlBefore);
     expect(errors).toEqual([]);

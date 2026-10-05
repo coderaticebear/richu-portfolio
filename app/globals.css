@@ -145,6 +145,7 @@ body {
     opacity 0.7s var(--ease-out-expo),
     transform 0.7s var(--ease-out-expo),
     filter 0.7s var(--ease-out-expo),
+    translate 0.3s var(--ease-out-expo),
     border-color 0.3s ease-out;
 }
 html[data-reveal-ready] [data-reveal=""]:not([data-revealed]),
