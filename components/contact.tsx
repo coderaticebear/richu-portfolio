@@ -4,7 +4,6 @@ import { useState, type FormEvent } from "react";
 import { contact } from "@/lib/content";
 import { btnPrimary, underlineLink } from "@/lib/styles";
 import { SectionHeading } from "./section-heading";
-import { Reveal } from "./motion/reveal";
 
 const inputClass =
   "w-full rounded-lg border border-hairline-strong bg-bg px-4 py-3 text-ink placeholder:text-ink-muted focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2";
@@ -28,12 +27,11 @@ export function Contact() {
       id="contact"
       className="section-pad section-gutter border-t border-hairline"
     >
-      <Reveal>
-        <SectionHeading
-          title="Let's talk"
-          description="Open to Tier 2/3 SaaS support, ITSM, and dev-adjacent roles."
-        />
-      </Reveal>
+      <SectionHeading
+        id="contact"
+        title="Let's talk"
+        description="Open to Tier 2/3 SaaS support, ITSM, and dev-adjacent roles."
+      />
 
       <div className="mt-12 grid gap-12 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-5">

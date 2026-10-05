@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import clsx from "clsx";
 import { AnimatePresence, motion } from "motion/react";
 import { navLinks, contact } from "@/lib/content";
 import { useActiveSection } from "@/lib/use-active-section";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { TorontoClock } from "@/components/toronto-clock";
 import { springSnappy } from "@/lib/motion";
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const activeId = useActiveSection(navLinks.map((l) => l.href.slice(1)));
 
   useEffect(() => {
@@ -25,6 +27,18 @@ export function Nav() {
     return () => observer.disconnect();
   }, []);
 
+  // Escape closes the mobile menu and hands focus back to its button.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen]);
+
   return (
     <header
       className={clsx(
@@ -35,12 +49,15 @@ export function Nav() {
       )}
     >
       <div className="section-gutter flex h-16 items-center justify-between gap-4 lg:h-20">
-        <Link
-          href="#top"
-          className="shrink-0 text-base font-semibold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
-        >
-          Richu Thankachan
-        </Link>
+        <div className="flex shrink-0 items-baseline gap-4">
+          <Link
+            href="#top"
+            className="text-base font-semibold tracking-tight text-ink focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+          >
+            Richu Thankachan
+          </Link>
+          <TorontoClock className="hidden text-sm text-ink-muted xl:inline" />
+        </div>
 
         <nav
           aria-label="Section"
@@ -84,6 +101,7 @@ export function Nav() {
         </div>
 
         <button
+          ref={menuButtonRef}
           type="button"
           className="flex h-10 w-10 items-center justify-center rounded-full border border-hairline text-ink lg:hidden focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
           aria-expanded={menuOpen}
@@ -142,7 +160,8 @@ export function Nav() {
             </a>
           ))}
         </nav>
-        <div className="flex items-center">
+        <div className="flex items-center justify-between gap-4">
+          <TorontoClock className="text-sm text-ink-muted" />
           <ThemeToggle />
         </div>
         <a

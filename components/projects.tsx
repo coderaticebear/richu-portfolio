@@ -1,12 +1,6 @@
-"use client";
-
-import { motion, useReducedMotion } from "motion/react";
 import { projects } from "@/lib/content";
-import { enterVariant, springSnappy, viewportOnce } from "@/lib/motion";
 import { underlineLink } from "@/lib/styles";
 import { SectionHeading } from "./section-heading";
-import { Reveal } from "./motion/reveal";
-import { SplitReveal } from "./motion/split-reveal";
 
 function TodoField({ label, todoHint }: { label: string; todoHint: string }) {
   return (
@@ -64,34 +58,22 @@ function LinkField({ value, todoHint }: { value: string | null; todoHint: string
 }
 
 export function Projects() {
-  const reduceMotion = useReducedMotion();
-  // See motion/reveal.tsx for why this swaps whileInView for animate
-  // under reduced motion rather than just dropping the trigger.
-  const entranceTrigger = reduceMotion
-    ? { animate: "show" as const }
-    : { whileInView: "show" as const, viewport: viewportOnce };
-
   return (
     <section
       id="projects"
       className="section-pad section-gutter border-t border-hairline"
     >
-      <Reveal>
-        <SectionHeading
-          title="Projects"
-          description="Two self-directed builds — a Laravel ERP and a from-scratch PHP framework — both open source."
-        />
-      </Reveal>
+      <SectionHeading
+        id="projects"
+        title="Projects"
+        description="Two self-directed builds — a Laravel ERP and a from-scratch PHP framework — both open source."
+      />
 
       <div className="mt-12 grid gap-6">
         {projects.map((project, index) => (
-          <motion.article
+          <article
             key={project.name}
-            initial="hidden"
-            variants={enterVariant}
-            {...entranceTrigger}
-            whileHover={{ y: -6 }}
-            transition={springSnappy}
+            data-reveal=""
             className="surface-card relative rounded-2xl border border-hairline-strong p-8 sm:p-14"
           >
             <span
@@ -102,7 +84,7 @@ export function Projects() {
             </span>
 
             <h3 className="relative text-[clamp(2rem,4.5vw,3.5rem)] leading-[1.02] font-medium tracking-[-0.015em] text-ink">
-              <SplitReveal text={project.name} by="word" trigger="scroll" stagger={0.05} />
+              {project.name}
             </h3>
             <p className="relative mt-3 max-w-lg text-lg text-ink-muted">
               {project.problem}
@@ -134,7 +116,7 @@ export function Projects() {
               />
               <LinkField value={project.link} todoHint="add a live/repo link" />
             </dl>
-          </motion.article>
+          </article>
         ))}
       </div>
     </section>

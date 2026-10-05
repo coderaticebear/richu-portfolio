@@ -32,6 +32,9 @@
   --font-sans: var(--font-switzer);
   --font-mono: var(--font-geist-mono);
 
+  /* Smooth deceleration, no overshoot: the one easing every reveal shares. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
   color-scheme: dark;
 }
 
@@ -119,6 +122,63 @@ body {
 .surface-card {
   background: var(--color-surface);
   box-shadow: var(--shadow-card);
+}
+
+/*
+  Reveal on scroll.
+  Everything is visible by default. RevealObserver marks whatever is
+  already on screen as revealed, then sets data-reveal-ready on <html>;
+  only after that does content further down start hidden, waiting to
+  animate in. Visitors without JavaScript, crawlers, and slow bundles
+  always get the whole page.
+*/
+[data-reveal=""],
+[data-reveal-item] {
+  transition:
+    opacity 0.7s var(--ease-out-expo),
+    transform 0.7s var(--ease-out-expo),
+    filter 0.7s var(--ease-out-expo);
+}
+html[data-reveal-ready] [data-reveal=""]:not([data-revealed]),
+html[data-reveal-ready] [data-reveal="group"]:not([data-revealed]) > [data-reveal-item] {
+  opacity: 0;
+  transform: translateY(14px);
+  filter: blur(4px);
+}
+[data-reveal="group"] > [data-reveal-item]:nth-child(2) { transition-delay: var(--reveal-step); }
+[data-reveal="group"] > [data-reveal-item]:nth-child(3) { transition-delay: calc(var(--reveal-step) * 2); }
+[data-reveal="group"] > [data-reveal-item]:nth-child(4) { transition-delay: calc(var(--reveal-step) * 3); }
+[data-reveal="group"] > [data-reveal-item]:nth-child(5) { transition-delay: calc(var(--reveal-step) * 4); }
+[data-reveal="group"] > [data-reveal-item]:nth-child(6) { transition-delay: calc(var(--reveal-step) * 5); }
+[data-reveal="group"] > [data-reveal-item]:nth-child(n + 7) { transition-delay: calc(var(--reveal-step) * 6); }
+
+/* Word-by-word mask reveal for headings: each word slides up inside its own clip. */
+.split-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  /* room for descenders inside the clip */
+  padding-bottom: 0.1em;
+  margin-bottom: -0.1em;
+}
+.split-word > span {
+  display: inline-block;
+  transition: transform 0.75s var(--ease-out-expo);
+  transition-delay: calc(var(--w, 0) * 60ms);
+}
+html[data-reveal-ready] [data-reveal="mask"]:not([data-revealed]) .split-word > span {
+  transform: translateY(115%);
+}
+
+/* Progress bars grow from zero when their card reveals. */
+.progress-fill {
+  transform: scaleX(var(--p, 0));
+  transform-origin: left;
+  transition: transform 0.9s var(--ease-out-expo) 0.2s;
+}
+html[data-reveal-ready] [data-reveal="group"]:not([data-revealed]) .progress-fill,
+html[data-reveal-ready] [data-reveal=""]:not([data-revealed]) .progress-fill {
+  transform: scaleX(0);
 }
 
 @media (prefers-reduced-motion: reduce) {

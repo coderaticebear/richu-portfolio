@@ -5,6 +5,7 @@ import { Geist_Mono } from "next/font/google";
 import { MotionConfig } from "motion/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { RevealObserver } from "@/components/reveal-observer";
 import "./globals.css";
 
 // Switzer — the typeface cosmos.studio itself is set in (confirmed via
@@ -24,10 +25,35 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const title = "Richu Thankachan — Technical Support Engineer & Full-Stack Developer";
+const description =
+  "Technical Support Engineer with a hands-on software development background in React, Node.js, and SQL — resolving complex SaaS, network, and application issues for 1,000+ end-users.";
+
+// Absolute URLs for share cards. Set NEXT_PUBLIC_SITE_URL once the site has
+// a domain; on Vercel the production URL is picked up automatically.
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
-  title: "Richu Thankachan — Technical Support Engineer & Full-Stack Developer",
-  description:
-    "Technical Support Engineer with a hands-on software development background in React, Node.js, and SQL — resolving complex SaaS, network, and application issues for 1,000+ end-users.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: "Richu Thankachan",
+    locale: "en_CA",
+    title,
+    description,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
 };
 
 export default function RootLayout({
@@ -48,6 +74,7 @@ export default function RootLayout({
           <MotionConfig reducedMotion="user">
             <SmoothScroll />
             {children}
+            <RevealObserver />
           </MotionConfig>
         </ThemeProvider>
       </body>

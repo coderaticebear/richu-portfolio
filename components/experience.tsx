@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { experience } from "@/lib/content";
 import { SectionHeading } from "./section-heading";
-import { Reveal } from "./motion/reveal";
 
 const STICKY_OFFSET = 96; // matches `top-24`
 const HANG = 320; // extra scroll distance the card holds fully in place
@@ -111,9 +110,7 @@ export function Experience() {
       id="experience"
       className="section-pad section-gutter border-t border-hairline"
     >
-      <Reveal>
-        <SectionHeading title="Experience" />
-      </Reveal>
+      <SectionHeading id="experience" title="Experience" />
 
       <ol className="relative mt-12 flex flex-col">
         {experience.map((entry, index) => (

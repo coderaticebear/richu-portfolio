@@ -1,15 +1,11 @@
-"use client";
-
 import { skillGroups } from "@/lib/content";
 import { SectionHeading } from "./section-heading";
-import { Reveal, RevealGroup, RevealItem } from "./motion/reveal";
+import { RevealGroup, RevealItem } from "./reveal";
 
 export function Skills() {
   return (
     <section id="skills" className="section-pad section-gutter border-t border-hairline">
-      <Reveal>
-        <SectionHeading title="Core Skills" />
-      </Reveal>
+      <SectionHeading id="skills" title="Core Skills" />
 
       <RevealGroup stagger={0.1} className="mt-12 grid gap-x-10 gap-y-10 sm:grid-cols-2">
         {skillGroups.map((group) => (
