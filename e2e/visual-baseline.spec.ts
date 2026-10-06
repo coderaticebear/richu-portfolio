@@ -13,10 +13,11 @@ const mask = (page: Page) => [page.locator("canvas")];
 const SECTIONS = [
   "top",
   "about",
-  "process",
-  "skills",
   "experience",
   "projects",
+  "build",
+  "process",
+  "skills",
   "credentials",
   "contact",
 ] as const;

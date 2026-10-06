@@ -31,6 +31,13 @@ export interface MethodStep {
   text: string;
 }
 
+export interface BuildStep {
+  title: string;
+  text: string;
+  /** Public proof for the step, when one exists. */
+  artifact?: { label: string; href: string };
+}
+
 export interface Project {
   name: string;
   problem: string;
@@ -38,6 +45,8 @@ export interface Project {
   stack: string[];
   outcome: string;
   link: string | null;
+  /** Plain note on how AI was used, shown on the card when set. */
+  aiNote?: string;
   /** Which generated diagram the project's case-file header draws. */
   diagram: "relational" | "router";
 }

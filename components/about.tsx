@@ -1,4 +1,4 @@
-import { metrics, summaryFull } from "@/lib/content";
+import { aiAbout, metrics, summaryFull } from "@/lib/content";
 import { SectionHeading } from "./section-heading";
 import { Reveal, RevealGroup, RevealItem } from "./reveal";
 import { CountUp } from "./count-up";
@@ -13,8 +13,9 @@ export function About() {
       <SectionHeading id="about" title="About" />
 
       <div className="mt-10 grid gap-12 lg:grid-cols-12 lg:gap-10">
-        <Reveal as="p" className="text-lg leading-relaxed text-ink-muted lg:col-span-5">
-          {summaryFull}
+        <Reveal className="space-y-5 text-lg leading-relaxed text-ink-muted lg:col-span-5">
+          <p>{summaryFull}</p>
+          <p>{aiAbout}</p>
         </Reveal>
 
         <Reveal className="surface-card overflow-hidden rounded-2xl border border-hairline-strong lg:col-span-7">

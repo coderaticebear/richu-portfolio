@@ -121,6 +121,12 @@ function ProjectCard({ project }: { project: Project }) {
             <dt className="font-mono text-xs text-ink-muted">Outcome</dt>
             <dd className="mt-1.5 text-ink">{project.outcome}</dd>
           </div>
+          {project.aiNote ? (
+            <div className="sm:col-span-2">
+              <dt className="font-mono text-xs text-ink-muted">Built with AI</dt>
+              <dd className="mt-1.5 text-ink">{project.aiNote}</dd>
+            </div>
+          ) : null}
           {project.link ? (
             <div>
               <dt className="font-mono text-xs text-ink-muted">Link</dt>

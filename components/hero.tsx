@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties, PointerEvent } from "react";
-import { contact, roles } from "@/lib/content";
+import { contact, positioning, roles } from "@/lib/content";
 import { btnPrimary, btnSecondary, btnGhost } from "@/lib/styles";
 import { useCanvasEffect } from "@/lib/canvas/use-canvas-effect";
 import { usePointerCapable } from "@/lib/use-pointer-capable";
@@ -61,6 +61,9 @@ export function Hero() {
         >
           I resolve SaaS, network, and application issues fast — and understand the code and
           systems behind them.
+        </p>
+        <p className="hero-in hero-shadow content-col mt-3 text-base text-ink-muted" style={enter(3)}>
+          {positioning}
         </p>
         <div className="hero-in mt-10 flex flex-wrap items-center gap-3" style={enter(4)}>
           <a href="#projects" className={btnPrimary}>

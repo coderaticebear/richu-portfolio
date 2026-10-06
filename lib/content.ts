@@ -1,4 +1,5 @@
 import type {
+  BuildStep,
   ContactPriority,
   Credential,
   EducationEntry,
@@ -50,6 +51,36 @@ export const methodology: MethodStep[] = [
     text: "Fix it and write it up in the knowledge base, or hand a confirmed defect to engineering with full technical context.",
   },
 ];
+
+// How School ERP gets built, taken from its public repo (issues, one PR per
+// change, CLAUDE.md/SKILLS.md, Pest and browser scripts, the CI audit).
+export const buildSteps: BuildStep[] = [
+  {
+    title: "Write it down",
+    text: "Each feature or fix starts as an issue in plain language: academic years, the class system, profile pages. I decide what gets built and in what order.",
+    artifact: { label: "Issues", href: "https://github.com/coderaticebear/school_erp/issues?q=is%3Aissue" },
+  },
+  {
+    title: "One change per branch",
+    text: "Every change gets its own branch and pull request, with a commit message that says what changed and why. The security work runs as a numbered series, SEC-03 to SEC-24.",
+    artifact: { label: "Pull requests", href: "https://github.com/coderaticebear/school_erp/pulls?q=is%3Apr" },
+  },
+  {
+    title: "Build with AI, under rules",
+    text: "Claude Code drafts the code and tests from written project rules and documented skills. I set the schema and architecture and review every diff before it merges.",
+    artifact: { label: "SKILLS.md", href: "https://github.com/coderaticebear/school_erp/blob/main/SKILLS.md" },
+  },
+  {
+    title: "Test, then repeat",
+    text: "A Pest suite, browser smoke and interaction scripts, and a dependency audit in CI run on the changes. Failures go back into the loop.",
+    artifact: { label: "CI audit", href: "https://github.com/coderaticebear/school_erp/blob/main/.github/workflows/audit.yml" },
+  },
+];
+
+export const positioning = "I also build with AI, from the first issue to a reviewed, tested release.";
+
+export const aiAbout =
+  "I use AI in my day job and on my own projects. It drafts; I decide, review, and test. The How I build section shows that process on a real project.";
 
 // Map positions for the Experience globe.
 export const places: Record<PlaceId, Place> = {
@@ -309,6 +340,8 @@ export const projects: Project[] = [
     outcome:
       "Fully working locally — migrations, seeders, and a Dockerized environment via Laravel Sail. Not yet deployed publicly.",
     link: "https://github.com/coderaticebear/school_erp",
+    aiNote:
+      "AI-assisted. I set the schema and architecture and review every change; Claude Code drafts code and tests under written project rules.",
     diagram: "relational",
   },
   {
@@ -369,6 +402,7 @@ export const navLinks = [
   { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
+  { href: "#build", label: "Build" },
   { href: "#process", label: "Process" },
   { href: "#skills", label: "Skills" },
   { href: "#credentials", label: "Credentials" },

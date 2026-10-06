@@ -31,3 +31,10 @@ test("headline numbers are real, not zero placeholders", async ({ page }) => {
   await expect(about).toContainText("95%+");
   await expect(about).toContainText("40%");
 });
+
+test("the build steps render as a list with links to the repo", async ({ page }) => {
+  await page.goto("/");
+  const steps = page.locator("#build ol > li");
+  await expect(steps).toHaveCount(4);
+  await expect(page.locator("#build ol a[href^='https://github.com/coderaticebear/school_erp']")).toHaveCount(4);
+});
