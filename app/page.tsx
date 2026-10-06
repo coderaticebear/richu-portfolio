@@ -15,11 +15,11 @@ export default function Home() {
       <Nav />
       <main id="main" className="flex-1">
         <Hero />
+        <Experience />
+        <Projects />
         <About />
         <HowIWork />
         <Skills />
-        <Experience />
-        <Projects />
         <Credentials />
         <Contact />
       </main>

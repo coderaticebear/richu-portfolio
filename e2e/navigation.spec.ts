@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-const SECTIONS = ["about", "process", "skills", "experience", "projects", "credentials", "contact"];
+const SECTIONS = ["experience", "projects", "about", "process", "skills", "credentials", "contact"];
 
 async function sectionOffsets(page: Page) {
   return page.evaluate((ids) => {
