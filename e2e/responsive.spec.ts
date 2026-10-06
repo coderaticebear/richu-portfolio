@@ -61,3 +61,18 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
     });
   });
 }
+
+// Side-by-side project cards are subgrids: preview, header, details and the
+// link row must start at the same height in both cards whatever the copy.
+for (const width of [1024, 1440]) {
+  test(`project cards line up row for row at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const rows = await page.locator("#projects article").evaluateAll((cards) =>
+      cards.map((card) => [...card.children].map((c) => Math.round(c.getBoundingClientRect().top))),
+    );
+    expect(rows).toHaveLength(2);
+    expect(rows[0]).toHaveLength(4);
+    expect(rows[1]).toEqual(rows[0]);
+  });
+}
