@@ -366,9 +366,9 @@ export const contactPriorities: ContactPriority[] = [
 ];
 
 export const navLinks = [
+  { href: "#about", label: "About" },
   { href: "#experience", label: "Experience" },
   { href: "#projects", label: "Projects" },
-  { href: "#about", label: "About" },
   { href: "#process", label: "Process" },
   { href: "#skills", label: "Skills" },
   { href: "#credentials", label: "Credentials" },
